@@ -193,7 +193,6 @@ h1 span{color:var(--accent2)}
 .c.we{border-color:rgba(124,109,250,.25);background:rgba(124,109,250,.04)}
 .c.st-done{border-color:var(--green-b)!important;background:var(--green-bg)!important}
 .c.st-skip{border-color:var(--red-b)!important;background:var(--red-bg)!important}
-.c.st-reschedule{border-color:var(--amber-b)!important;background:var(--amber-bg)!important}
 .c.today-cell{border-color:var(--accent)!important;border-width:2px}
 .c:not(.no-study):not(.empty):hover{transform:translateY(-1px);box-shadow:0 4px 14px rgba(0,0,0,.35)}
 .c-num{font-family:var(--mono);font-size:10px;color:var(--muted);margin-bottom:3px}
@@ -203,7 +202,7 @@ h1 span{color:var(--accent2)}
 .c-hrs.wd{background:var(--teal-bg);color:var(--teal)}
 .c-hrs.we{background:var(--accent-bg);color:var(--accent2)}
 .c-dot{position:absolute;top:4px;right:4px;width:7px;height:7px;border-radius:50%}
-.dot-planned{background:var(--accent)}.dot-done{background:var(--green)}.dot-skip{background:var(--red)}.dot-reschedule{background:var(--amber)}
+.dot-planned{background:var(--accent)}.dot-done{background:var(--green)}.dot-skip{background:var(--red)}
 
 /* LIST */
 #panel-list{display:none}
@@ -212,7 +211,6 @@ h1 span{color:var(--accent2)}
 .li.wd{border-left:3px solid var(--teal)}.li.we{border-left:3px solid var(--accent)}
 .li.st-done{border-left:3px solid var(--green);opacity:.7}
 .li.st-skip{border-left:3px solid var(--red);opacity:.4}
-.li.st-reschedule{border-left:3px solid var(--amber)}
 .li-date{font-family:var(--mono);font-size:10px;color:var(--muted);min-width:70px;padding-top:2px;flex-shrink:0;line-height:1.4}
 .li-content{flex:1;min-width:0}
 .li-title{font-size:12px;font-weight:600;color:var(--text);line-height:1.4;margin-bottom:2px}
@@ -222,7 +220,7 @@ h1 span{color:var(--accent2)}
 .li-hrs.wd{background:var(--teal-bg);color:var(--teal)}.li-hrs.we{background:var(--accent-bg);color:var(--accent2)}
 .pill{font-family:var(--mono);font-size:9px;padding:2px 7px;border-radius:10px;text-transform:uppercase;letter-spacing:.04em}
 .pill-planned{background:var(--accent-bg);color:var(--accent2)}.pill-done{background:var(--green-bg);color:var(--green)}
-.pill-skip{background:var(--red-bg);color:var(--red)}.pill-reschedule{background:var(--amber-bg);color:var(--amber)}
+.pill-skip{background:var(--red-bg);color:var(--red)}
 .tag{display:inline-block;font-family:var(--mono);font-size:8px;padding:2px 5px;border-radius:3px;margin-left:4px;vertical-align:middle;text-transform:uppercase}
 .tag-light{background:var(--green-bg);color:var(--green)}.tag-moderate{background:var(--teal-bg);color:var(--teal)}
 .tag-heavy{background:var(--red-bg);color:var(--red)}.tag-buffer{background:var(--amber-bg);color:var(--amber)}
@@ -256,13 +254,12 @@ h1 span{color:var(--accent2)}
 /* STATUS PICKER */
 .section-lbl{font-family:var(--mono);font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px;margin-top:14px}
 .section-lbl:first-child{margin-top:0}
-.status-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:4px}
+.status-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:4px}
 .sbtn{font-family:var(--mono);font-size:12px;padding:10px 12px;border-radius:var(--rsm);border:1px solid var(--border2);background:var(--surface2);color:var(--muted);cursor:pointer;transition:all .2s;text-align:left;display:flex;align-items:center;gap:8px}
 .sbtn .dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
 .sbtn.sel-planned{border-color:var(--accent-b);background:var(--accent-bg);color:var(--accent2)}
 .sbtn.sel-done{border-color:var(--green-b);background:var(--green-bg);color:var(--green)}
 .sbtn.sel-skip{border-color:var(--red-b);background:var(--red-bg);color:var(--red)}
-.sbtn.sel-reschedule{border-color:var(--amber-b);background:var(--amber-bg);color:var(--amber)}
 
 /* MODULE CARDS */
 .mod-card{background:var(--surface2);border:1px solid var(--border);border-radius:var(--rsm);padding:12px;margin-bottom:8px}
@@ -359,7 +356,6 @@ h1 span{color:var(--accent2)}
       <div class="leg"><div class="leg-sw" style="background:rgba(124,109,250,.1);border-color:rgba(124,109,250,.4)"></div>Weekend</div>
       <div class="leg"><div class="leg-sw" style="background:var(--green-bg);border-color:var(--green-b)"></div>Done</div>
       <div class="leg"><div class="leg-sw" style="background:var(--red-bg);border-color:var(--red-b)"></div>Skipped</div>
-      <div class="leg"><div class="leg-sw" style="background:var(--amber-bg);border-color:var(--amber-b)"></div>Rescheduled</div>
     </div>
     <div class="hint">Tap any study day to open details, change status &amp; view resources</div>
     <div id="panel-calendar"></div>
@@ -387,7 +383,6 @@ h1 span{color:var(--accent2)}
         <button class="sbtn" data-s="planned" onclick="setSt('planned')"><span class="dot" style="background:var(--accent)"></span>Planned</button>
         <button class="sbtn" data-s="done" onclick="setSt('done')"><span class="dot" style="background:var(--green)"></span>Completed</button>
         <button class="sbtn" data-s="skip" onclick="setSt('skip')"><span class="dot" style="background:var(--red)"></span>Skip day</button>
-        <button class="sbtn" data-s="reschedule" onclick="setSt('reschedule')"><span class="dot" style="background:var(--amber)"></span>Reschedule</button>
       </div>
       <div class="section-lbl" style="margin-top:16px">Topics this day</div>
       <div id="mMods"></div>
@@ -474,26 +469,28 @@ function buildSch(){
   const start=st.startDate||td();
   const mods=plan.modules||[];
   let mi=0,carry=0,days=[],cur=start,safe=0;
-  while(mi<mods.length&&safe++<700){
+  while((mi<mods.length||carry>0)&&safe++<700){
     const we=isWE(cur),avail=we?weH:wdH;
     const dayS=ds[cur]||{};
     const status=dayS.status||'planned';
-    if(status==='skip'||status==='reschedule'){
+    if(status==='skip'){
       days.push({dateStr:cur,status,modules:[],hrs:0,isWeekend:we,notes:dayS.notes||''});
       cur=addD(cur,1);continue;
     }
     const dm=[];let rem=avail;
+    // finish any module carried over from the previous day
     if(carry>0&&mi<mods.length){
-      const m=mods[mi],need=m.hours-carry;
-      if(need<=rem){dm.push({...m});rem-=need;carry=0;mi++}
-      else{dm.push({...m});carry+=rem;rem=0;mi++}
+      const m=mods[mi];
+      if(carry<=rem){dm.push({...m});rem-=carry;carry=0;mi++}
+      else{dm.push({...m});carry-=rem;rem=0}
     }
+    // fill the rest of the day with subsequent modules
     while(rem>0.01&&mi<mods.length){
       const m=mods[mi];
       if(m.hours<=rem+0.01){dm.push({...m});rem-=m.hours;carry=0;mi++}
-      else{dm.push({...m});carry=m.hours-rem;rem=0;mi++}
+      else{dm.push({...m});carry=m.hours-rem;rem=0}
     }
-    days.push({dateStr:cur,status,modules:dm,hrs:avail,isWeekend:we,notes:dayS.notes||''});
+    days.push({dateStr:cur,status,modules:dm,hrs:avail-rem,isWeekend:we,notes:dayS.notes||''});
     cur=addD(cur,1);
   }
   return days;
@@ -521,7 +518,7 @@ function renderAll(){
   renderCal(sch);
   renderList(sch);
   const last=sch[sch.length-1];
-  const active=sch.filter(d=>d.modules.length>0&&d.status!=='skip'&&d.status!=='reschedule');
+  const active=sch.filter(d=>d.modules.length>0&&d.status!=='skip');
   document.getElementById('endVal').textContent=last?fmtS(last.dateStr):'—';
   document.getElementById('totalDays').textContent=sch.length+' days';
   const hrs=active.reduce((s,d)=>s+d.hrs,0),diff=hrs-plan.total_hours;
@@ -531,7 +528,7 @@ function renderAll(){
 }
 
 function renderSummary(sch,plan){
-  const active=sch.filter(d=>d.modules.length>0&&d.status!=='skip'&&d.status!=='reschedule');
+  const active=sch.filter(d=>d.modules.length>0&&d.status!=='skip');
   const skipped=sch.filter(d=>d.status==='skip').length;
   const hrs=active.reduce((s,d)=>s+d.hrs,0);
   const needed=plan.total_hours;
@@ -603,13 +600,13 @@ function renderCal(sch){
         if(status!=='planned')cls+=` st-${status}`;
         if(isT)cls+=' today-cell';
         cell.className=cls;
-        const dotCls={done:'dot-done',skip:'dot-skip',reschedule:'dot-reschedule',planned:'dot-planned'}[status];
+        const dotCls={done:'dot-done',skip:'dot-skip',planned:'dot-planned'}[status];
         if(s.modules.length){
           const fm=s.modules[0];
           const more=s.modules.length>1?`<br><span style="color:var(--muted);font-size:8px">+${s.modules.length-1}</span>`:'';
           cell.innerHTML=`<div class="c-num">${day}</div><div class="c-mod">${fm.short||fm.title.slice(0,16)}</div><span class="c-hrs ${we?'we':'wd'}">${s.hrs}h</span><div class="c-dot ${dotCls}"></div>`;
         } else {
-          const lbl={skip:'Skipped',reschedule:'Moved'}[status]||'';
+          const lbl=status==='skip'?'Skipped':'';
           cell.innerHTML=`<div class="c-num">${day}</div><div class="c-mod" style="color:var(--muted);font-size:9px">${lbl}</div><div class="c-dot ${dotCls}"></div>`;
         }
         cell.onclick=()=>openModal(ds,s);
@@ -624,14 +621,14 @@ function renderCal(sch){
 // ── LIST ───────────────────────────────────────────────────────────
 function renderList(sch){
   const panel=document.getElementById('panel-list');panel.innerHTML='';
-  sch.filter(d=>d.modules.length||d.status==='skip'||d.status==='reschedule').forEach(d=>{
+  sch.filter(d=>d.modules.length||d.status==='skip').forEach(d=>{
     const item=document.createElement('div');
     const status=d.status||'planned';
     const baseC=d.isWeekend?'we':'wd';
     item.className=`li ${status==='planned'?baseC:'st-'+status}`;
     const hrsCls=d.isWeekend?'we':'wd';
-    const pillCls={'planned':'pill-planned','done':'pill-done','skip':'pill-skip','reschedule':'pill-reschedule'}[status];
-    const pillLbl={'planned':'Planned','done':'Done','skip':'Skipped','reschedule':'Rescheduled'}[status];
+    const pillCls={'planned':'pill-planned','done':'pill-done','skip':'pill-skip'}[status];
+    const pillLbl={'planned':'Planned','done':'Done','skip':'Skipped'}[status];
     if(!d.modules.length){
       item.innerHTML=`<div class="li-date">${fmtS(d.dateStr)}</div><div class="li-content"><div class="li-title">${pillLbl}</div></div><div class="li-right"><span class="pill ${pillCls}">${pillLbl}</span></div>`;
     } else {
@@ -656,7 +653,7 @@ function openModal(ds,dayData){
   document.getElementById('mDate').textContent=fmtD(ds);
   document.getElementById('mTitle').textContent=
     dayData.modules.length ? dayData.modules.map(m=>m.title).join(' + ') :
-    ({skip:'Day skipped',reschedule:'Day rescheduled'}[curSt]||'Rest day');
+    (curSt==='skip'?'Day skipped':'Rest day');
   document.getElementById('mMeta').textContent=
     dayData.modules.length ? `${dayData.hrs}h · ${dayData.isWeekend?'Weekend':'Weekday'}` : '';
   document.getElementById('mNotes').value=dayState.notes||'';
@@ -752,37 +749,7 @@ document.getElementById('startDate').addEventListener('change',e=>{const pl=getP
 document.getElementById('wdHrs').addEventListener('change',e=>{const pl=getPlan();if(!pl)return;pl.state.wdHrs=parseFloat(e.target.value)||2;save();renderAll()});
 document.getElementById('weHrs').addEventListener('change',e=>{const pl=getPlan();if(!pl)return;pl.state.weHrs=parseFloat(e.target.value)||4;save();renderAll()});
 
-// ── BOOT WITH BUILT-IN PLAN ────────────────────────────────────────
-const BUILTIN={
-  "title":"Vibe Coding B2F","description":"Beginner to Fundamental: 8 modules","version":"1.0","total_hours":44,
-  "modules":[
-    {"id":1,"title":"Module 1 — The AI Ecosystem","short":"M1: Ecosystem","detail":"Tool categories, Copilot vs Cursor vs Claude, data privacy, secure setup, model selection","hours":3,"tag":"light","resources":[{"title":"GitHub Copilot Docs","url":"https://docs.github.com/en/copilot","type":"docs"},{"title":"Cursor Documentation","url":"https://docs.cursor.com","type":"docs"},{"title":"Anthropic Claude Docs","url":"https://docs.anthropic.com","type":"docs"}]},
-    {"id":2,"title":"Module 2 — How AI Fails (pt.1)","short":"M2: AI Fails 1","detail":"LLM mental model, training data, knowledge cutoffs, hallucination root causes","hours":2.5,"tag":"moderate","resources":[{"title":"Illustrated GPT-2 (LLM internals)","url":"https://jalammar.github.io/illustrated-gpt2/","type":"article"},{"title":"AI Hallucination — IBM Guide","url":"https://www.ibm.com/topics/ai-hallucinations","type":"article"}]},
-    {"id":3,"title":"Module 2 (pt.2) + Module 3 — Tokens","short":"M2+M3: Tokens","detail":"Failure categories, blast-radius warnings, tokens, context windows, cost awareness","hours":3.5,"tag":"moderate","resources":[{"title":"OpenAI Tokenizer Tool","url":"https://platform.openai.com/tokenizer","type":"tool"},{"title":"Understanding Context Windows","url":"https://help.openai.com/en/articles/4936856-what-are-tokens-and-how-to-count-them","type":"article"}]},
-    {"id":4,"title":"Module 4 — Prompt Engineering (pt.1)","short":"M4: Prompts 1","detail":"Prompt anatomy: persona, context, task, constraints, output format. System prompts and few-shot examples","hours":3,"tag":"heavy","resources":[{"title":"Anthropic Prompt Engineering Guide","url":"https://docs.anthropic.com/en/docs/build-with-claude/prompt-engineering/overview","type":"docs"},{"title":"Prompt Engineering Guide","url":"https://www.promptingguide.ai/","type":"article"}]},
-    {"id":5,"title":"Module 4 — Prompt Engineering (pt.2)","short":"M4: Prompts 2","detail":"Quality criteria, constraint specificity, acceptance criteria, deterministic output format, start prompt library","hours":3,"tag":"heavy","resources":[{"title":"Few-Shot Prompting","url":"https://www.promptingguide.ai/techniques/fewshot","type":"article"},{"title":"Chain-of-Thought Prompting","url":"https://www.promptingguide.ai/techniques/cot","type":"article"}]},
-    {"id":6,"title":"Module 4 — Prompt Engineering (pt.3)","short":"M4: Prompts 3","detail":"Prompting for code: language version, style, test inclusion. Version your prompt library with failure notes","hours":2,"tag":"heavy","resources":[{"title":"GitHub Copilot Best Practices","url":"https://docs.github.com/en/copilot/using-github-copilot/best-practices-for-using-github-copilot","type":"docs"}]},
-    {"id":7,"title":"Module 5 — Reviewing AI Code (pt.1)","short":"M5: Review 1","detail":"Different review posture. Nine categories 1–5: correctness, logic, edge cases, error handling, performance","hours":3,"tag":"heavy","resources":[{"title":"Google Code Review Guide","url":"https://google.github.io/eng-practices/review/","type":"article"},{"title":"OWASP Code Review Guide","url":"https://owasp.org/www-project-code-review-guide/","type":"docs"}]},
-    {"id":8,"title":"Module 5 — Reviewing AI Code (pt.2)","short":"M5: Review 2","detail":"Categories 6–9: security, maintainability, tests, docs. Hallucinated APIs, PR checklist template","hours":4,"tag":"heavy","resources":[{"title":"AI Security Risks — Semgrep Blog","url":"https://semgrep.dev/blog/2023/ai-security-risks","type":"article"},{"title":"Code Review Checklist","url":"https://github.com/mgreiler/code-review-checklist","type":"tool"}]},
-    {"id":9,"title":"Module 6 — Security (pt.1)","short":"M6: Security 1","detail":"AI security risk. Patterns 1–4: SQL injection, hardcoded credentials, insecure deserialisation, path traversal","hours":3,"tag":"heavy","resources":[{"title":"OWASP Top 10","url":"https://owasp.org/www-project-top-ten/","type":"docs"},{"title":"SQL Injection Prevention Cheatsheet","url":"https://cheatsheetseries.owasp.org/cheatsheets/SQL_Injection_Prevention_Cheat_Sheet.html","type":"docs"},{"title":"Snyk Vulnerability DB","url":"https://security.snyk.io/","type":"tool"}]},
-    {"id":10,"title":"Module 6 — Security (pt.2)","short":"M6: Security 2","detail":"Patterns 5–8: broken access control, missing validation, error disclosure, prompt injection","hours":3,"tag":"heavy","resources":[{"title":"Prompt Injection — Simon Willison","url":"https://simonwillison.net/2022/Sep/12/prompt-injection/","type":"article"},{"title":"OWASP Input Validation Cheatsheet","url":"https://cheatsheetseries.owasp.org/cheatsheets/Input_Validation_Cheat_Sheet.html","type":"docs"}]},
-    {"id":11,"title":"Module 6 — Security (pt.3) + Tooling","short":"M6: Semgrep","detail":"OWASP Top 10, Semgrep + Snyk, secrets scanning, pre-commit gate on a real repo","hours":3,"tag":"heavy","resources":[{"title":"Semgrep Getting Started","url":"https://semgrep.dev/docs/getting-started/","type":"tool"},{"title":"GitLeaks — Secrets Scanning","url":"https://github.com/gitleaks/gitleaks","type":"tool"},{"title":"Pre-commit Framework","url":"https://pre-commit.com/","type":"tool"}]},
-    {"id":12,"title":"Module 7 — Professional Workflow","short":"M7: Workflow","detail":"AI attribution commits, .cursorignore, dependency hygiene, CI toolchain, pre-deployment checklist","hours":3,"tag":"moderate","resources":[{"title":"Conventional Commits","url":"https://www.conventionalcommits.org/","type":"docs"},{"title":"Dependabot Docs","url":"https://docs.github.com/en/code-security/dependabot","type":"docs"},{"title":"GitHub Actions","url":"https://docs.github.com/en/actions","type":"docs"}]},
-    {"id":13,"title":"Module 8 — Testing AI Code (pt.1)","short":"M8: Testing 1","detail":"AI-testing-AI trap, writing tests independently as a quality gate, TDD with AI","hours":3,"tag":"heavy","resources":[{"title":"TDD with AI — Martin Fowler","url":"https://martinfowler.com/articles/2023-chatgpt-xu-hao.html","type":"article"},{"title":"Jest Getting Started","url":"https://jestjs.io/docs/getting-started","type":"docs"},{"title":"Pytest Docs","url":"https://docs.pytest.org/","type":"docs"}]},
-    {"id":14,"title":"Module 8 — Testing AI Code (pt.2)","short":"M8: Testing 2","detail":"Systematic edge case discovery, full TDD cycle: write failing test first, then prompt for implementation","hours":3,"tag":"heavy","resources":[{"title":"Hypothesis — Property Based Testing","url":"https://hypothesis.readthedocs.io/en/latest/","type":"docs"},{"title":"Boundary Value Analysis","url":"https://www.softwaretestinghelp.com/boundary-value-analysis-equivalence-partitioning/","type":"article"}]},
-    {"id":15,"title":"Consolidation — Prompt Library + PR Checklist","short":"Consolidation 1","detail":"Finalise prompt library (10+ prompts with failure notes), adapt PR checklist to your stack","hours":2,"tag":"buffer","resources":[]},
-    {"id":16,"title":"Consolidation — Security Audit","short":"Consolidation 2","detail":"Audit one real AI-generated module against all 8 vulnerability patterns, verify pre-commit hook","hours":2,"tag":"buffer","resources":[]},
-    {"id":17,"title":"Consolidation — CI Toolchain + Test Suite","short":"Consolidation 3","detail":"Verify CI toolchain is live, review the independent test suite for an AI-generated module","hours":2,"tag":"buffer","resources":[]},
-    {"id":18,"title":"Final Review — All Deliverables","short":"Final Review","detail":"Walk through every competency outcome from the syllabus. You are done with Level 1.","hours":2,"tag":"buffer","resources":[]}
-  ]
-};
-
 load();
-if(!Object.keys(APP.plans).length){
-  const id='plan_builtin';
-  BUILTIN.state={startDate:td(),wdHrs:2,weHrs:4,dayStates:{}};
-  APP.plans[id]=BUILTIN;APP.active=id;save();
-}
 renderAll();
 </script>
 </body>

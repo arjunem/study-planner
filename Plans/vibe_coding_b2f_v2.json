@@ -1,0 +1,247 @@
+{
+  "title": "Vibe Coding B2F",
+  "description": "Beginner to Fundamental: 8 modules covering AI tools, prompting, code review, security, workflow and testing",
+  "version": "2.0",
+  "total_hours": 50,
+  "modules": [
+    {
+      "id": 1,
+      "title": "Module 1 — The AI Ecosystem",
+      "short": "M1: Ecosystem",
+      "detail": "Tool categories, Copilot vs Cursor vs Claude, data privacy, secure setup, model selection",
+      "hours": 3,
+      "tag": "light",
+      "resources": [
+        {
+          "title": "GitHub Copilot Docs",
+          "url": "https://docs.github.com/en/copilot",
+          "type": "docs"
+        },
+        {
+          "title": "Cursor Documentation",
+          "url": "https://docs.cursor.com",
+          "type": "docs"
+        },
+        {
+          "title": "Anthropic Claude Docs",
+          "url": "https://docs.anthropic.com",
+          "type": "docs"
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "title": "Module 2 — How AI Fails & Tokens",
+      "short": "M2: AI Fails",
+      "detail": "LLM mental model, training data, knowledge cutoffs, hallucination root causes, failure categories, blast-radius warnings, tokens, context windows, cost awareness",
+      "hours": 6,
+      "tag": "moderate",
+      "resources": [
+        {
+          "title": "Illustrated GPT-2 (LLM internals)",
+          "url": "https://jalammar.github.io/illustrated-gpt2/",
+          "type": "article"
+        },
+        {
+          "title": "AI Hallucination — IBM Guide",
+          "url": "https://www.ibm.com/topics/ai-hallucinations",
+          "type": "article"
+        },
+        {
+          "title": "OpenAI Tokenizer Tool",
+          "url": "https://platform.openai.com/tokenizer",
+          "type": "tool"
+        },
+        {
+          "title": "Understanding Context Windows",
+          "url": "https://help.openai.com/en/articles/4936856-what-are-tokens-and-how-to-count-them",
+          "type": "article"
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "title": "Module 3 — Prompt Engineering",
+      "short": "M3: Prompts",
+      "detail": "Prompt anatomy: persona, context, task, constraints, output format. System prompts, few-shot examples, quality criteria, constraint specificity, deterministic output, prompting for code with style and test inclusion",
+      "hours": 8,
+      "tag": "heavy",
+      "resources": [
+        {
+          "title": "Anthropic Prompt Engineering Guide",
+          "url": "https://docs.anthropic.com/en/docs/build-with-claude/prompt-engineering/overview",
+          "type": "docs"
+        },
+        {
+          "title": "Prompt Engineering Guide",
+          "url": "https://www.promptingguide.ai/",
+          "type": "article"
+        },
+        {
+          "title": "Few-Shot Prompting",
+          "url": "https://www.promptingguide.ai/techniques/fewshot",
+          "type": "article"
+        },
+        {
+          "title": "Chain-of-Thought Prompting",
+          "url": "https://www.promptingguide.ai/techniques/cot",
+          "type": "article"
+        },
+        {
+          "title": "GitHub Copilot Best Practices",
+          "url": "https://docs.github.com/en/copilot/using-github-copilot/best-practices-for-using-github-copilot",
+          "type": "docs"
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "title": "Module 4 — Reviewing AI Code",
+      "short": "M4: Code Review",
+      "detail": "Review posture for AI code. Nine categories: correctness, logic, edge cases, error handling, performance, security, maintainability, tests, docs. Hallucinated APIs and PR checklist template",
+      "hours": 7,
+      "tag": "heavy",
+      "resources": [
+        {
+          "title": "Google Code Review Guide",
+          "url": "https://google.github.io/eng-practices/review/",
+          "type": "article"
+        },
+        {
+          "title": "OWASP Code Review Guide",
+          "url": "https://owasp.org/www-project-code-review-guide/",
+          "type": "docs"
+        },
+        {
+          "title": "AI Security Risks — Semgrep Blog",
+          "url": "https://semgrep.dev/blog/2023/ai-security-risks",
+          "type": "article"
+        },
+        {
+          "title": "Code Review Checklist",
+          "url": "https://github.com/mgreiler/code-review-checklist",
+          "type": "tool"
+        }
+      ]
+    },
+    {
+      "id": 5,
+      "title": "Module 5 — Security",
+      "short": "M5: Security",
+      "detail": "AI security risk. Eight patterns: SQL injection, hardcoded credentials, insecure deserialisation, path traversal, broken access control, missing validation, error disclosure, prompt injection. Semgrep, Snyk, secrets scanning and pre-commit gate",
+      "hours": 9,
+      "tag": "heavy",
+      "resources": [
+        {
+          "title": "OWASP Top 10",
+          "url": "https://owasp.org/www-project-top-ten/",
+          "type": "docs"
+        },
+        {
+          "title": "SQL Injection Prevention Cheatsheet",
+          "url": "https://cheatsheetseries.owasp.org/cheatsheets/SQL_Injection_Prevention_Cheat_Sheet.html",
+          "type": "docs"
+        },
+        {
+          "title": "Snyk Vulnerability DB",
+          "url": "https://security.snyk.io/",
+          "type": "tool"
+        },
+        {
+          "title": "Prompt Injection — Simon Willison",
+          "url": "https://simonwillison.net/2022/Sep/12/prompt-injection/",
+          "type": "article"
+        },
+        {
+          "title": "OWASP Input Validation Cheatsheet",
+          "url": "https://cheatsheetseries.owasp.org/cheatsheets/Input_Validation_Cheat_Sheet.html",
+          "type": "docs"
+        },
+        {
+          "title": "Semgrep Getting Started",
+          "url": "https://semgrep.dev/docs/getting-started/",
+          "type": "tool"
+        },
+        {
+          "title": "GitLeaks — Secrets Scanning",
+          "url": "https://github.com/gitleaks/gitleaks",
+          "type": "tool"
+        },
+        {
+          "title": "Pre-commit Framework",
+          "url": "https://pre-commit.com/",
+          "type": "tool"
+        }
+      ]
+    },
+    {
+      "id": 6,
+      "title": "Module 6 — Professional Workflow",
+      "short": "M6: Workflow",
+      "detail": "AI attribution commits, .cursorignore, dependency hygiene, CI toolchain, pre-deployment checklist",
+      "hours": 3,
+      "tag": "moderate",
+      "resources": [
+        {
+          "title": "Conventional Commits",
+          "url": "https://www.conventionalcommits.org/",
+          "type": "docs"
+        },
+        {
+          "title": "Dependabot Docs",
+          "url": "https://docs.github.com/en/code-security/dependabot",
+          "type": "docs"
+        },
+        {
+          "title": "GitHub Actions",
+          "url": "https://docs.github.com/en/actions",
+          "type": "docs"
+        }
+      ]
+    },
+    {
+      "id": 7,
+      "title": "Module 7 — Testing AI Code",
+      "short": "M7: Testing",
+      "detail": "AI-testing-AI trap, writing tests independently as a quality gate, TDD with AI, systematic edge case discovery, full TDD cycle: write failing test first then prompt for implementation",
+      "hours": 6,
+      "tag": "heavy",
+      "resources": [
+        {
+          "title": "TDD with AI — Martin Fowler",
+          "url": "https://martinfowler.com/articles/2023-chatgpt-xu-hao.html",
+          "type": "article"
+        },
+        {
+          "title": "Jest Getting Started",
+          "url": "https://jestjs.io/docs/getting-started",
+          "type": "docs"
+        },
+        {
+          "title": "Pytest Docs",
+          "url": "https://docs.pytest.org/",
+          "type": "docs"
+        },
+        {
+          "title": "Hypothesis — Property Based Testing",
+          "url": "https://hypothesis.readthedocs.io/en/latest/",
+          "type": "docs"
+        },
+        {
+          "title": "Boundary Value Analysis",
+          "url": "https://www.softwaretestinghelp.com/boundary-value-analysis-equivalence-partitioning/",
+          "type": "article"
+        }
+      ]
+    },
+    {
+      "id": 8,
+      "title": "Consolidation & Final Review",
+      "short": "Consolidation",
+      "detail": "Finalise prompt library (10+ prompts with failure notes), adapt PR checklist, audit one real AI-generated module against all 8 vulnerability patterns, verify CI toolchain, review independent test suite, walk through every competency outcome",
+      "hours": 8,
+      "tag": "buffer",
+      "resources": []
+    }
+  ]
+}
