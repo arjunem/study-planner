@@ -1,0 +1,133 @@
+{
+  "title": "Docker for Developers",
+  "description": "Containers, images, networking, Compose, and CI integration — from zero to production-ready",
+  "version": "1.0",
+  "total_hours": 24,
+  "modules": [
+    {
+      "id": 1,
+      "title": "Module 1 — Containers & Images",
+      "short": "M1: Containers",
+      "detail": "What a container is, docker run, images, layers, Dockerfile basics, .dockerignore",
+      "hours": 3,
+      "tag": "light",
+      "resources": [
+        {
+          "title": "Docker Official Getting Started",
+          "url": "https://docs.docker.com/get-started/",
+          "type": "docs"
+        },
+        {
+          "title": "Play with Docker (browser sandbox)",
+          "url": "https://labs.play-with-docker.com/",
+          "type": "practice"
+        },
+        {
+          "title": "Docker in 100 Seconds — Fireship",
+          "url": "https://www.youtube.com/watch?v=Gjnup-PuquQ",
+          "type": "video"
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "title": "Module 2 — Networking & Volumes",
+      "short": "M2: Networking",
+      "detail": "Bridge networks, port binding, named volumes, bind mounts, data persistence",
+      "hours": 3,
+      "tag": "moderate",
+      "resources": [
+        {
+          "title": "Docker Networking Overview",
+          "url": "https://docs.docker.com/network/",
+          "type": "docs"
+        },
+        {
+          "title": "Docker Volumes Guide",
+          "url": "https://docs.docker.com/storage/volumes/",
+          "type": "docs"
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "title": "Module 3 — Docker Compose",
+      "short": "M3: Compose",
+      "detail": "docker-compose.yml anatomy, multi-service apps, environment variables, health checks, depends_on",
+      "hours": 4,
+      "tag": "moderate",
+      "resources": [
+        {
+          "title": "Compose File Reference",
+          "url": "https://docs.docker.com/compose/compose-file/",
+          "type": "docs"
+        },
+        {
+          "title": "Awesome Compose — example projects",
+          "url": "https://github.com/docker/awesome-compose",
+          "type": "practice"
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "title": "Module 4 — Production & Security",
+      "short": "M4: Production",
+      "detail": "Multi-stage builds, non-root users, image scanning, secrets management, slim base images",
+      "hours": 4,
+      "tag": "heavy",
+      "resources": [
+        {
+          "title": "Docker Security Best Practices",
+          "url": "https://docs.docker.com/develop/security-best-practices/",
+          "type": "docs"
+        },
+        {
+          "title": "Snyk Container Scanning",
+          "url": "https://docs.snyk.io/products/snyk-container",
+          "type": "tool"
+        },
+        {
+          "title": "Multi-stage Builds Guide",
+          "url": "https://docs.docker.com/build/building/multi-stage/",
+          "type": "docs"
+        }
+      ]
+    },
+    {
+      "id": 5,
+      "title": "Module 5 — Registries & CI Integration",
+      "short": "M5: CI/CD",
+      "detail": "Docker Hub, GitHub Container Registry, push/pull workflows, GitHub Actions pipeline with Docker build",
+      "hours": 4,
+      "tag": "heavy",
+      "resources": [
+        {
+          "title": "GitHub Actions — Docker Build & Push",
+          "url": "https://docs.docker.com/build/ci/github-actions/",
+          "type": "docs"
+        },
+        {
+          "title": "GitHub Container Registry",
+          "url": "https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-container-registry",
+          "type": "docs"
+        }
+      ]
+    },
+    {
+      "id": 6,
+      "title": "Consolidation & Real Project",
+      "short": "Consolidation",
+      "detail": "Containerise one of your own projects end-to-end: Dockerfile, Compose, security scan, CI pipeline",
+      "hours": 6,
+      "tag": "buffer",
+      "resources": [
+        {
+          "title": "Docker Samples Repository",
+          "url": "https://github.com/dockersamples",
+          "type": "practice"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,666 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#0e0e11">
+<link rel="manifest" href="manifest.json">
+<title>Study Planner</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Syne:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0e0e11;--surface:#16161a;--surface2:#1e1e24;
+  --border:#2a2a33;--border2:#3a3a46;
+  --text:#e8e8f0;--muted:#7a7a8e;--faint:#252530;
+  --accent:#7c6dfa;--accent2:#a78bfa;
+  --accent-bg:rgba(124,109,250,.12);--accent-b:rgba(124,109,250,.3);
+  --green:#34d399;--green-bg:rgba(52,211,153,.1);--green-b:rgba(52,211,153,.3);
+  --amber:#fbbf24;--amber-bg:rgba(251,191,36,.1);--amber-b:rgba(251,191,36,.3);
+  --red:#f87171;--red-bg:rgba(248,113,113,.1);--red-b:rgba(248,113,113,.3);
+  --teal:#22d3ee;--teal-bg:rgba(34,211,238,.1);--teal-b:rgba(34,211,238,.3);
+  --r:10px;--rsm:6px;--mono:'DM Mono',monospace;--sans:'Syne',sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+body{background:var(--bg);color:var(--text);font-family:var(--sans);min-height:100vh;overflow-x:hidden}
+body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(rgba(124,109,250,.025) 1px,transparent 1px),linear-gradient(90deg,rgba(124,109,250,.025) 1px,transparent 1px);background-size:40px 40px;pointer-events:none;z-index:0}
+.app{position:relative;z-index:1;max-width:960px;margin:0 auto;padding:20px 16px 100px}
+
+/* HEADER */
+.hdr{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:18px;flex-wrap:wrap}
+.logo-tag{font-family:var(--mono);font-size:10px;color:var(--accent2);letter-spacing:.15em;text-transform:uppercase;margin-bottom:6px;display:flex;align-items:center;gap:6px}
+.logo-tag::before{content:'';width:6px;height:6px;background:var(--accent);border-radius:50%;animation:pulse 2s ease-in-out infinite;flex-shrink:0}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(.8)}}
+h1{font-size:clamp(20px,4vw,28px);font-weight:700;letter-spacing:-.02em;line-height:1.1}
+h1 span{color:var(--accent2)}
+.plan-subtitle{font-family:var(--mono);font-size:11px;color:var(--muted);margin-top:4px}
+.hdr-btns{display:flex;gap:8px;flex-wrap:wrap;align-items:flex-start;padding-top:4px}
+.hdr-btn{font-family:var(--mono);font-size:11px;padding:8px 14px;border-radius:var(--rsm);border:1px solid var(--border2);background:transparent;color:var(--muted);cursor:pointer;transition:all .2s;white-space:nowrap}
+.hdr-btn:hover,.hdr-btn:active{border-color:var(--accent2);color:var(--accent2)}
+.hdr-btn.primary{background:var(--accent-bg);border-color:var(--accent-b);color:var(--accent2)}
+
+/* PLAN BAR */
+.plan-bar{display:flex;gap:6px;margin-bottom:16px;overflow-x:auto;padding-bottom:4px;align-items:center}
+.plan-bar::-webkit-scrollbar{height:3px}
+.plan-bar::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px}
+.plan-chip-wrap{display:inline-flex;align-items:center;gap:2px;flex-shrink:0}
+.plan-chip{font-family:var(--mono);font-size:11px;padding:6px 12px;border-radius:20px;border:1px solid var(--border2);background:transparent;color:var(--muted);cursor:pointer;transition:all .2s;white-space:nowrap}
+.plan-chip.active{background:var(--accent-bg);border-color:var(--accent-b);color:var(--accent2)}
+.del-plan{font-family:var(--mono);font-size:12px;padding:2px 6px;border-radius:10px;border:1px solid transparent;background:transparent;color:var(--faint);cursor:pointer;transition:all .2s}
+.del-plan:hover{border-color:var(--red-b);color:var(--red)}
+
+/* CONTROLS */
+.controls{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:16px;display:grid;grid-template-columns:1fr 1fr 1fr auto;gap:10px;align-items:end;margin-bottom:14px}
+@media(max-width:520px){.controls{grid-template-columns:1fr 1fr}}
+.ctrl{display:flex;flex-direction:column;gap:5px}
+.ctrl label{font-family:var(--mono);font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.1em}
+.ctrl input{background:var(--surface2);border:1px solid var(--border2);border-radius:var(--rsm);color:var(--text);font-family:var(--mono);font-size:13px;padding:9px 10px;outline:none;transition:border-color .2s;width:100%;color-scheme:dark;-webkit-appearance:none}
+.ctrl input:focus{border-color:var(--accent)}
+.reset-btn{font-family:var(--mono);font-size:11px;background:transparent;border:1px solid var(--border2);color:var(--muted);padding:9px 14px;border-radius:var(--rsm);cursor:pointer;transition:all .2s;white-space:nowrap}
+.reset-btn:hover{border-color:var(--red);color:var(--red)}
+
+/* SUMMARY */
+.summary{display:grid;grid-template-columns:repeat(auto-fit,minmax(80px,1fr));gap:8px;margin-bottom:14px}
+.stat{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:11px 10px;text-align:center}
+.stat-val{font-family:var(--mono);font-size:clamp(13px,3vw,18px);font-weight:500;line-height:1.1}
+.stat-val.ok{color:var(--green)}.stat-val.warn{color:var(--amber)}.stat-val.bad{color:var(--red)}
+.stat-lbl{font-family:var(--mono);font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-top:3px}
+
+/* WARN */
+.warn-box{display:none;background:var(--amber-bg);border:1px solid var(--amber-b);border-radius:var(--rsm);padding:9px 13px;font-family:var(--mono);font-size:11px;color:var(--amber);margin-bottom:12px;line-height:1.5}
+
+/* PROGRESS */
+.prog-wrap{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:14px 16px;margin-bottom:14px}
+.prog-top{display:flex;justify-content:space-between;font-family:var(--mono);font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px}
+.prog-pct{color:var(--accent2);font-weight:500}
+.prog-track{height:5px;background:var(--surface2);border-radius:3px;overflow:hidden}
+.prog-fill{height:100%;background:linear-gradient(90deg,var(--accent),var(--accent2));border-radius:3px;transition:width .5s ease}
+.prog-stats{display:flex;gap:16px;margin-top:10px;flex-wrap:wrap}
+.pstat{font-family:var(--mono);font-size:10px;color:var(--muted)}
+.pstat span{color:var(--text);font-weight:500}
+
+/* TABS */
+.tabs{display:flex;gap:3px;margin-bottom:12px;background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:4px}
+.tab{font-family:var(--mono);font-size:11px;padding:7px 0;border-radius:7px;border:none;background:transparent;color:var(--muted);cursor:pointer;transition:all .2s;letter-spacing:.04em;text-transform:uppercase;flex:1;text-align:center}
+.tab.active{background:var(--accent-bg);color:var(--accent2);border:1px solid var(--accent-b)}
+
+/* LEGEND */
+.legend{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:6px;font-family:var(--mono);font-size:10px;color:var(--muted)}
+.leg{display:flex;align-items:center;gap:5px}
+.leg-sw{width:11px;height:11px;border-radius:3px;border:1px solid;flex-shrink:0}
+.hint{font-family:var(--mono);font-size:10px;color:var(--border2);margin-bottom:12px}
+
+/* CALENDAR */
+.cal-month-label{font-family:var(--mono);font-size:10px;color:var(--accent2);text-transform:uppercase;letter-spacing:.12em;margin-bottom:6px;margin-top:18px}
+.cal-month-label:first-child{margin-top:0}
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:3px;margin-bottom:3px}
+.cal-hdr{text-align:center;font-family:var(--mono);font-size:9px;color:var(--border2);padding:3px 0;text-transform:uppercase}
+.c{border:1px solid var(--border);border-radius:var(--rsm);padding:5px 4px;min-height:68px;cursor:pointer;transition:all .15s;position:relative;background:var(--surface)}
+.c.empty{background:transparent;border-color:transparent;cursor:default}
+.c.no-study{background:var(--surface);cursor:default;opacity:.2;pointer-events:none}
+.c.wd{border-color:rgba(34,211,238,.2);background:rgba(34,211,238,.03)}
+.c.we{border-color:rgba(124,109,250,.25);background:rgba(124,109,250,.04)}
+.c.st-done{border-color:var(--green-b)!important;background:var(--green-bg)!important}
+.c.st-skip{border-color:var(--red-b)!important;background:var(--red-bg)!important}
+.c.st-reschedule{border-color:var(--amber-b)!important;background:var(--amber-bg)!important}
+.c.today-cell{border-color:var(--accent)!important;border-width:2px}
+.c:not(.no-study):not(.empty):hover{transform:translateY(-1px);box-shadow:0 4px 14px rgba(0,0,0,.35)}
+.c-num{font-family:var(--mono);font-size:10px;color:var(--muted);margin-bottom:3px}
+.c.today-cell .c-num{color:var(--accent2)}
+.c-mod{font-size:9px;line-height:1.3;color:var(--text);font-weight:500}
+.c-hrs{font-family:var(--mono);font-size:8px;padding:1px 4px;border-radius:3px;display:inline-block;margin-top:3px}
+.c-hrs.wd{background:var(--teal-bg);color:var(--teal)}
+.c-hrs.we{background:var(--accent-bg);color:var(--accent2)}
+.c-dot{position:absolute;top:4px;right:4px;width:7px;height:7px;border-radius:50%}
+.dot-planned{background:var(--accent)}.dot-done{background:var(--green)}.dot-skip{background:var(--red)}.dot-reschedule{background:var(--amber)}
+
+/* LIST */
+#panel-list{display:none}
+.li{display:flex;align-items:flex-start;gap:12px;padding:12px 14px;background:var(--surface);border:1px solid var(--border);border-radius:var(--r);margin-bottom:6px;cursor:pointer;transition:all .15s}
+.li:hover{border-color:var(--border2);transform:translateX(2px)}
+.li.wd{border-left:3px solid var(--teal)}.li.we{border-left:3px solid var(--accent)}
+.li.st-done{border-left:3px solid var(--green);opacity:.7}
+.li.st-skip{border-left:3px solid var(--red);opacity:.4}
+.li.st-reschedule{border-left:3px solid var(--amber)}
+.li-date{font-family:var(--mono);font-size:10px;color:var(--muted);min-width:70px;padding-top:2px;flex-shrink:0;line-height:1.4}
+.li-content{flex:1;min-width:0}
+.li-title{font-size:12px;font-weight:600;color:var(--text);line-height:1.4;margin-bottom:2px}
+.li-detail{font-size:10px;color:var(--muted);font-family:var(--mono);line-height:1.5}
+.li-right{display:flex;flex-direction:column;align-items:flex-end;gap:4px;flex-shrink:0}
+.li-hrs{font-family:var(--mono);font-size:10px;padding:2px 7px;border-radius:4px}
+.li-hrs.wd{background:var(--teal-bg);color:var(--teal)}.li-hrs.we{background:var(--accent-bg);color:var(--accent2)}
+.pill{font-family:var(--mono);font-size:9px;padding:2px 7px;border-radius:10px;text-transform:uppercase;letter-spacing:.04em}
+.pill-planned{background:var(--accent-bg);color:var(--accent2)}.pill-done{background:var(--green-bg);color:var(--green)}
+.pill-skip{background:var(--red-bg);color:var(--red)}.pill-reschedule{background:var(--amber-bg);color:var(--amber)}
+.tag{display:inline-block;font-family:var(--mono);font-size:8px;padding:2px 5px;border-radius:3px;margin-left:4px;vertical-align:middle;text-transform:uppercase}
+.tag-light{background:var(--green-bg);color:var(--green)}.tag-moderate{background:var(--teal-bg);color:var(--teal)}
+.tag-heavy{background:var(--red-bg);color:var(--red)}.tag-buffer{background:var(--amber-bg);color:var(--amber)}
+
+/* END BAR */
+.end-bar{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:13px 16px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-top:16px;font-family:var(--mono)}
+.end-lbl{font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em}
+.end-val{font-size:14px;color:var(--green);font-weight:500;margin-top:2px}
+
+/* EMPTY STATE */
+.empty-state{text-align:center;padding:60px 20px;font-family:var(--mono)}
+.empty-icon{font-size:40px;margin-bottom:16px;opacity:.4}
+.empty-title{font-size:16px;font-weight:600;color:var(--text);margin-bottom:8px;font-family:var(--sans)}
+.empty-sub{font-size:12px;color:var(--muted);line-height:1.7;margin-bottom:20px}
+.empty-btn{font-family:var(--mono);font-size:12px;padding:10px 22px;border-radius:var(--rsm);border:1px solid var(--accent-b);background:var(--accent-bg);color:var(--accent2);cursor:pointer}
+
+/* ── DAY MODAL ── */
+.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.72);z-index:100;align-items:flex-end;justify-content:center;backdrop-filter:blur(6px)}
+.overlay.open{display:flex}
+@media(min-width:600px){.overlay{align-items:center}}
+.modal{background:var(--surface);border:1px solid var(--border2);border-radius:20px 20px 0 0;width:100%;max-width:600px;max-height:92vh;overflow-y:auto;animation:slideUp .22s ease;-webkit-overflow-scrolling:touch}
+@media(min-width:600px){.modal{border-radius:16px;max-height:86vh}}
+@keyframes slideUp{from{transform:translateY(28px);opacity:0}to{transform:translateY(0);opacity:1}}
+.modal-drag{width:36px;height:4px;background:var(--border2);border-radius:2px;margin:12px auto 0}
+.modal-head{padding:14px 20px 12px;border-bottom:1px solid var(--border)}
+.m-date{font-family:var(--mono);font-size:10px;color:var(--accent2);text-transform:uppercase;letter-spacing:.1em;margin-bottom:5px}
+.m-title{font-size:16px;font-weight:700;line-height:1.3;color:var(--text)}
+.m-meta{font-family:var(--mono);font-size:11px;color:var(--muted);margin-top:4px}
+.modal-body{padding:16px 20px}
+
+/* STATUS PICKER */
+.section-lbl{font-family:var(--mono);font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px;margin-top:14px}
+.section-lbl:first-child{margin-top:0}
+.status-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:4px}
+.sbtn{font-family:var(--mono);font-size:12px;padding:10px 12px;border-radius:var(--rsm);border:1px solid var(--border2);background:var(--surface2);color:var(--muted);cursor:pointer;transition:all .2s;text-align:left;display:flex;align-items:center;gap:8px}
+.sbtn .dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.sbtn.sel-planned{border-color:var(--accent-b);background:var(--accent-bg);color:var(--accent2)}
+.sbtn.sel-done{border-color:var(--green-b);background:var(--green-bg);color:var(--green)}
+.sbtn.sel-skip{border-color:var(--red-b);background:var(--red-bg);color:var(--red)}
+.sbtn.sel-reschedule{border-color:var(--amber-b);background:var(--amber-bg);color:var(--amber)}
+
+/* MODULE CARDS */
+.mod-card{background:var(--surface2);border:1px solid var(--border);border-radius:var(--rsm);padding:12px;margin-bottom:8px}
+.mod-title{font-size:13px;font-weight:600;color:var(--text);margin-bottom:4px;line-height:1.4}
+.mod-detail{font-size:11px;color:var(--muted);font-family:var(--mono);line-height:1.55;margin-bottom:8px}
+.mod-hrs{font-family:var(--mono);font-size:10px;padding:2px 8px;border-radius:4px;display:inline-block;background:var(--surface);border:1px solid var(--border2);color:var(--muted);margin-bottom:10px}
+
+/* RESOURCES */
+.res-link{display:flex;align-items:center;gap:8px;padding:8px 10px;background:var(--surface);border:1px solid var(--border);border-radius:var(--rsm);margin-bottom:5px;text-decoration:none;transition:border-color .2s;-webkit-tap-highlight-color:transparent}
+.res-link:hover,.res-link:active{border-color:var(--accent-b)}
+.res-icon{font-size:13px;flex-shrink:0;width:20px;text-align:center}
+.res-body{flex:1;min-width:0}
+.res-title{font-size:12px;color:var(--text);font-weight:500;line-height:1.3}
+.res-type{font-family:var(--mono);font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-top:1px}
+.res-arr{font-size:11px;color:var(--muted)}
+.no-res{font-family:var(--mono);font-size:11px;color:var(--border2);padding:4px 0}
+
+/* NOTES */
+.notes-area{width:100%;background:var(--surface2);border:1px solid var(--border2);border-radius:var(--rsm);color:var(--text);font-family:var(--mono);font-size:12px;padding:10px;resize:vertical;min-height:76px;outline:none;transition:border-color .2s;line-height:1.55}
+.notes-area:focus{border-color:var(--accent)}
+.modal-foot{padding:12px 20px 20px;display:flex;gap:8px;border-top:1px solid var(--border);margin-top:4px;position:sticky;bottom:0;background:var(--surface)}
+.m-cancel{font-family:var(--mono);font-size:12px;padding:11px 18px;border-radius:var(--rsm);border:1px solid var(--border2);background:transparent;color:var(--muted);cursor:pointer;flex:1}
+.m-save{font-family:var(--mono);font-size:12px;padding:11px 18px;border-radius:var(--rsm);border:none;background:var(--accent);color:#fff;cursor:pointer;flex:2;font-weight:500;transition:opacity .2s}
+.m-save:hover{opacity:.85}
+
+/* IMPORT MODAL */
+.import-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.78);z-index:200;align-items:center;justify-content:center;backdrop-filter:blur(6px)}
+.import-overlay.open{display:flex}
+.import-modal{background:var(--surface);border:1px solid var(--border2);border-radius:16px;width:90%;max-width:480px;padding:24px;animation:slideUp .2s ease}
+.import-title{font-size:18px;font-weight:700;margin-bottom:6px}
+.import-sub{font-family:var(--mono);font-size:11px;color:var(--muted);margin-bottom:20px;line-height:1.7}
+.import-sub code{background:var(--surface2);padding:1px 5px;border-radius:3px;color:var(--accent2)}
+.drop-zone{border:2px dashed var(--border2);border-radius:var(--r);padding:28px 20px;text-align:center;cursor:pointer;transition:all .2s;margin-bottom:14px}
+.drop-zone.drag-over{border-color:var(--accent);background:var(--accent-bg)}
+.drop-icon{font-size:30px;margin-bottom:8px}
+.drop-text{font-family:var(--mono);font-size:12px;color:var(--muted);line-height:1.7}
+.drop-text strong{color:var(--accent2)}
+.import-actions{display:flex;gap:8px}
+.import-cancel{font-family:var(--mono);font-size:12px;padding:10px;border-radius:var(--rsm);border:1px solid var(--border2);background:transparent;color:var(--muted);cursor:pointer;flex:1}
+#fileInput{display:none}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="hdr">
+    <div class="hdr-left">
+      <div class="logo-tag">Universal Study Planner</div>
+      <h1>Study <span>Planner</span></h1>
+      <div class="plan-subtitle" id="planSubtitle">Import a plan to get started</div>
+    </div>
+    <div class="hdr-btns">
+      <button class="hdr-btn" onclick="openImport()">+ Import plan</button>
+      <button class="hdr-btn primary" onclick="exportSch()">↓ Export</button>
+    </div>
+  </div>
+
+  <div class="plan-bar" id="planBar"></div>
+
+  <div id="emptyState" class="empty-state">
+    <div class="empty-icon">📚</div>
+    <div class="empty-title">No plans yet</div>
+    <div class="empty-sub">Import a <strong>plan.json</strong> generated by Claude.<br>Ask Claude: <em>"Create a study plan for [topic]"</em><br>and it will generate a file you can drag in here.</div>
+    <button class="empty-btn" onclick="openImport()">Import your first plan</button>
+  </div>
+
+  <div id="planContent" style="display:none">
+    <div class="controls">
+      <div class="ctrl"><label>Start date</label><input type="date" id="startDate"></div>
+      <div class="ctrl"><label>Weekday hrs</label><input type="number" id="wdHrs" value="2" min="0.5" max="10" step="0.5"></div>
+      <div class="ctrl"><label>Weekend hrs</label><input type="number" id="weHrs" value="4" min="0.5" max="12" step="0.5"></div>
+      <button class="reset-btn" onclick="resetDays()">↺ Reset</button>
+    </div>
+    <div class="summary" id="summaryBar"></div>
+    <div class="warn-box" id="warnBox"></div>
+    <div class="prog-wrap">
+      <div class="prog-top"><span>Progress</span><span class="prog-pct" id="progPct">0%</span></div>
+      <div class="prog-track"><div class="prog-fill" id="progFill" style="width:0%"></div></div>
+      <div class="prog-stats" id="progStats"></div>
+    </div>
+    <div class="tabs">
+      <button class="tab active" onclick="switchTab('calendar',this)">Calendar</button>
+      <button class="tab" onclick="switchTab('list',this)">Day list</button>
+    </div>
+    <div class="legend">
+      <div class="leg"><div class="leg-sw" style="background:rgba(34,211,238,.1);border-color:rgba(34,211,238,.4)"></div>Weekday</div>
+      <div class="leg"><div class="leg-sw" style="background:rgba(124,109,250,.1);border-color:rgba(124,109,250,.4)"></div>Weekend</div>
+      <div class="leg"><div class="leg-sw" style="background:var(--green-bg);border-color:var(--green-b)"></div>Done</div>
+      <div class="leg"><div class="leg-sw" style="background:var(--red-bg);border-color:var(--red-b)"></div>Skipped</div>
+      <div class="leg"><div class="leg-sw" style="background:var(--amber-bg);border-color:var(--amber-b)"></div>Rescheduled</div>
+    </div>
+    <div class="hint">Tap any study day to open details, change status &amp; view resources</div>
+    <div id="panel-calendar"></div>
+    <div id="panel-list"></div>
+    <div class="end-bar">
+      <div><div class="end-lbl">Course complete</div><div class="end-val" id="endVal">—</div></div>
+      <div><div class="end-lbl">Total days</div><div class="end-val" id="totalDays">—</div></div>
+      <div><div class="end-lbl">Hours buffer</div><div class="end-val" id="hrsBuf">—</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- DAY MODAL -->
+<div class="overlay" id="dayOverlay" onclick="closeModalOut(event)">
+  <div class="modal">
+    <div class="modal-drag"></div>
+    <div class="modal-head">
+      <div class="m-date" id="mDate"></div>
+      <div class="m-title" id="mTitle"></div>
+      <div class="m-meta" id="mMeta"></div>
+    </div>
+    <div class="modal-body">
+      <div class="section-lbl">Day status</div>
+      <div class="status-grid">
+        <button class="sbtn" data-s="planned" onclick="setSt('planned')"><span class="dot" style="background:var(--accent)"></span>Planned</button>
+        <button class="sbtn" data-s="done" onclick="setSt('done')"><span class="dot" style="background:var(--green)"></span>Completed</button>
+        <button class="sbtn" data-s="skip" onclick="setSt('skip')"><span class="dot" style="background:var(--red)"></span>Skip day</button>
+        <button class="sbtn" data-s="reschedule" onclick="setSt('reschedule')"><span class="dot" style="background:var(--amber)"></span>Reschedule</button>
+      </div>
+      <div class="section-lbl" style="margin-top:16px">Topics this day</div>
+      <div id="mMods"></div>
+      <div class="section-lbl">Session notes</div>
+      <textarea class="notes-area" id="mNotes" placeholder="What did you cover? Blockers? Questions to follow up..."></textarea>
+    </div>
+    <div class="modal-foot">
+      <button class="m-cancel" onclick="closeModal()">Cancel</button>
+      <button class="m-save" onclick="saveDay()">Save &amp; close</button>
+    </div>
+  </div>
+</div>
+
+<!-- IMPORT MODAL -->
+<div class="import-overlay" id="importOverlay" onclick="closeImportOut(event)">
+  <div class="import-modal">
+    <div class="import-title">Import a plan</div>
+    <div class="import-sub">Drop a <code>plan.json</code> file generated by Claude. Ask Claude:<br><em>"Create a study plan JSON for learning [topic] in [N] weeks"</em></div>
+    <div class="drop-zone" id="dropZone" onclick="document.getElementById('fileInput').click()">
+      <div class="drop-icon">📂</div>
+      <div class="drop-text">Drop <strong>plan.json</strong> here<br>or tap to browse files</div>
+    </div>
+    <div class="import-actions">
+      <button class="import-cancel" onclick="closeImport()">Cancel</button>
+    </div>
+    <input type="file" id="fileInput" accept=".json" onchange="handleFile(event)">
+  </div>
+</div>
+
+<script>
+// ── STORE ──────────────────────────────────────────────────────────
+const SK='studyplanner_v2';
+let APP={plans:{},active:null};
+function load(){try{const s=localStorage.getItem(SK);if(s)APP={...APP,...JSON.parse(s)}}catch(e){}}
+function save(){try{localStorage.setItem(SK,JSON.stringify(APP))}catch(e){}}
+
+// ── UTILS ──────────────────────────────────────────────────────────
+const DAYS=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+const MONTHS=['January','February','March','April','May','June','July','August','September','October','November','December'];
+const MS=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+const RES_ICON={video:'▶',article:'📄',docs:'📋',course:'🎓',tool:'🔧',practice:'💻',other:'🔗'};
+function td(){const d=new Date();return`${d.getFullYear()}-${p(d.getMonth()+1)}-${p(d.getDate())}`}
+function p(n){return String(n).padStart(2,'0')}
+function addD(ds,n){const d=new Date(ds+'T00:00:00');d.setDate(d.getDate()+n);return`${d.getFullYear()}-${p(d.getMonth()+1)}-${p(d.getDate())}`}
+function isWE(ds){const d=new Date(ds+'T00:00:00');return d.getDay()===0||d.getDay()===6}
+function fmtD(ds){const d=new Date(ds+'T00:00:00');return`${DAYS[d.getDay()]}, ${d.getDate()} ${MS[d.getMonth()]} ${d.getFullYear()}`}
+function fmtS(ds){const d=new Date(ds+'T00:00:00');return`${DAYS[d.getDay()]} ${d.getDate()} ${MS[d.getMonth()]}`}
+function getPlan(){return APP.plans[APP.active]}
+function getState(){const pl=getPlan();return pl?pl.state:{dayStates:{},startDate:td(),wdHrs:2,weHrs:4}}
+
+// ── SCHEDULE ───────────────────────────────────────────────────────
+function buildSch(){
+  const plan=getPlan();if(!plan)return[];
+  const st=plan.state;
+  const ds=st.dayStates||{};
+  const wdH=parseFloat(st.wdHrs)||2;
+  const weH=parseFloat(st.weHrs)||4;
+  const start=st.startDate||td();
+  const mods=plan.modules||[];
+  let mi=0,carry=0,days=[],cur=start,safe=0;
+  while(mi<mods.length&&safe++<700){
+    const we=isWE(cur),avail=we?weH:wdH;
+    const dayS=ds[cur]||{};
+    const status=dayS.status||'planned';
+    if(status==='skip'||status==='reschedule'){
+      days.push({dateStr:cur,status,modules:[],hrs:0,isWeekend:we,notes:dayS.notes||''});
+      cur=addD(cur,1);continue;
+    }
+    const dm=[];let rem=avail;
+    if(carry>0&&mi<mods.length){
+      const m=mods[mi],need=m.hours-carry;
+      if(need<=rem){dm.push({...m});rem-=need;carry=0;mi++}
+      else{dm.push({...m});carry+=rem;rem=0;mi++}
+    }
+    while(rem>0.01&&mi<mods.length){
+      const m=mods[mi];
+      if(m.hours<=rem+0.01){dm.push({...m});rem-=m.hours;carry=0;mi++}
+      else{dm.push({...m});carry=m.hours-rem;rem=0;mi++}
+    }
+    days.push({dateStr:cur,status,modules:dm,hrs:avail,isWeekend:we,notes:dayS.notes||''});
+    cur=addD(cur,1);
+  }
+  return days;
+}
+
+// ── RENDER ALL ─────────────────────────────────────────────────────
+function renderAll(){
+  renderPlanBar();
+  const plan=getPlan();
+  if(!plan){
+    document.getElementById('emptyState').style.display='block';
+    document.getElementById('planContent').style.display='none';
+    return;
+  }
+  document.getElementById('emptyState').style.display='none';
+  document.getElementById('planContent').style.display='block';
+  const st=plan.state;
+  document.getElementById('planSubtitle').textContent=`${plan.title} · ${plan.modules.length} modules · ${plan.total_hours}h`;
+  document.getElementById('startDate').value=st.startDate||td();
+  document.getElementById('wdHrs').value=st.wdHrs||2;
+  document.getElementById('weHrs').value=st.weHrs||4;
+  const sch=buildSch();
+  renderSummary(sch,plan);
+  renderProgress(sch);
+  renderCal(sch);
+  renderList(sch);
+  const last=sch[sch.length-1];
+  const active=sch.filter(d=>d.modules.length>0&&d.status!=='skip'&&d.status!=='reschedule');
+  document.getElementById('endVal').textContent=last?fmtS(last.dateStr):'—';
+  document.getElementById('totalDays').textContent=sch.length+' days';
+  const hrs=active.reduce((s,d)=>s+d.hrs,0),diff=hrs-plan.total_hours;
+  const el=document.getElementById('hrsBuf');
+  if(diff>=0){el.textContent='+'+diff.toFixed(1)+'h';el.style.color='var(--green)'}
+  else{el.textContent=Math.abs(diff).toFixed(1)+'h short';el.style.color='var(--red)'}
+}
+
+function renderSummary(sch,plan){
+  const active=sch.filter(d=>d.modules.length>0&&d.status!=='skip'&&d.status!=='reschedule');
+  const skipped=sch.filter(d=>d.status==='skip').length;
+  const hrs=active.reduce((s,d)=>s+d.hrs,0);
+  const needed=plan.total_hours;
+  const hc=hrs>=needed?'ok':hrs>=needed*.9?'warn':'bad';
+  const w=document.getElementById('warnBox');
+  if(hrs<needed){w.style.display='block';w.textContent=`⚠ Need ${needed}h — only ${hrs}h scheduled. Reduce skips or increase daily hours.`}
+  else w.style.display='none';
+  document.getElementById('summaryBar').innerHTML=`
+    <div class="stat"><div class="stat-val">${needed}</div><div class="stat-lbl">Needed</div></div>
+    <div class="stat"><div class="stat-val ${hc}">${hrs}</div><div class="stat-lbl">Scheduled</div></div>
+    <div class="stat"><div class="stat-val">${active.length}</div><div class="stat-lbl">Study days</div></div>
+    <div class="stat"><div class="stat-val ${skipped>0?'warn':''}">${skipped}</div><div class="stat-lbl">Skipped</div></div>`;
+}
+
+function renderProgress(sch){
+  const done=sch.filter(d=>d.status==='done'&&d.modules.length>0);
+  const total=sch.filter(d=>d.modules.length>0&&d.status!=='skip');
+  const pct=total.length?Math.round(done.length/total.length*100):0;
+  document.getElementById('progPct').textContent=pct+'%';
+  document.getElementById('progFill').style.width=pct+'%';
+  document.getElementById('progStats').innerHTML=`
+    <div class="pstat">Done: <span>${done.length}</span></div>
+    <div class="pstat">Remaining: <span>${total.length-done.length}</span></div>
+    <div class="pstat">Skipped: <span>${sch.filter(d=>d.status==='skip').length}</span></div>`;
+}
+
+function renderPlanBar(){
+  const bar=document.getElementById('planBar');bar.innerHTML='';
+  Object.entries(APP.plans).forEach(([id,plan])=>{
+    const wrap=document.createElement('span');wrap.className='plan-chip-wrap';
+    const chip=document.createElement('button');
+    chip.className='plan-chip'+(APP.active===id?' active':'');
+    chip.textContent=plan.title;
+    chip.onclick=()=>{APP.active=id;save();renderAll()};
+    const del=document.createElement('button');
+    del.className='del-plan';del.textContent='×';del.title='Delete plan';
+    del.onclick=e=>{e.stopPropagation();if(confirm(`Delete "${plan.title}"?`)){delete APP.plans[id];if(APP.active===id)APP.active=Object.keys(APP.plans)[0]||null;save();renderAll()}};
+    wrap.append(chip,del);bar.appendChild(wrap);
+  });
+}
+
+// ── CALENDAR ───────────────────────────────────────────────────────
+function renderCal(sch){
+  const panel=document.getElementById('panel-calendar');panel.innerHTML='';
+  if(!sch.length)return;
+  const sm={};sch.forEach(s=>{sm[s.dateStr]=s});
+  const today=td();
+  let cur=new Date(sch[0].dateStr+'T00:00:00');cur.setDate(1);
+  const last=new Date(sch[sch.length-1].dateStr+'T00:00:00');
+  while(cur<=last){
+    const yr=cur.getFullYear(),mo=cur.getMonth();
+    const ml=document.createElement('div');ml.className='cal-month-label';
+    ml.textContent=`${MONTHS[mo]} ${yr}`;panel.appendChild(ml);
+    const g=document.createElement('div');g.className='cal-grid';
+    DAYS.forEach(d=>{const h=document.createElement('div');h.className='cal-hdr';h.textContent=d[0];g.appendChild(h)});
+    const fo=new Date(yr,mo,1).getDay();
+    for(let i=0;i<fo;i++){const e=document.createElement('div');e.className='c empty';g.appendChild(e)}
+    const dim=new Date(yr,mo+1,0).getDate();
+    for(let day=1;day<=dim;day++){
+      const ds=`${yr}-${p(mo+1)}-${p(day)}`;
+      const cell=document.createElement('div');
+      const s=sm[ds],isT=ds===today;
+      if(!s){
+        cell.className='c no-study';
+        cell.innerHTML=`<div class="c-num">${day}</div>`;
+      } else {
+        const we=s.isWeekend,status=s.status||'planned';
+        let cls=`c ${we?'we':'wd'}`;
+        if(status!=='planned')cls+=` st-${status}`;
+        if(isT)cls+=' today-cell';
+        cell.className=cls;
+        const dotCls={done:'dot-done',skip:'dot-skip',reschedule:'dot-reschedule',planned:'dot-planned'}[status];
+        if(s.modules.length){
+          const fm=s.modules[0];
+          const more=s.modules.length>1?`<br><span style="color:var(--muted);font-size:8px">+${s.modules.length-1}</span>`:'';
+          cell.innerHTML=`<div class="c-num">${day}</div><div class="c-mod">${fm.short||fm.title.slice(0,16)}</div><span class="c-hrs ${we?'we':'wd'}">${s.hrs}h</span><div class="c-dot ${dotCls}"></div>`;
+        } else {
+          const lbl={skip:'Skipped',reschedule:'Moved'}[status]||'';
+          cell.innerHTML=`<div class="c-num">${day}</div><div class="c-mod" style="color:var(--muted);font-size:9px">${lbl}</div><div class="c-dot ${dotCls}"></div>`;
+        }
+        cell.onclick=()=>openModal(ds,s);
+      }
+      g.appendChild(cell);
+    }
+    panel.appendChild(g);
+    cur.setMonth(cur.getMonth()+1);
+  }
+}
+
+// ── LIST ───────────────────────────────────────────────────────────
+function renderList(sch){
+  const panel=document.getElementById('panel-list');panel.innerHTML='';
+  sch.filter(d=>d.modules.length||d.status==='skip'||d.status==='reschedule').forEach(d=>{
+    const item=document.createElement('div');
+    const status=d.status||'planned';
+    const baseC=d.isWeekend?'we':'wd';
+    item.className=`li ${status==='planned'?baseC:'st-'+status}`;
+    const hrsCls=d.isWeekend?'we':'wd';
+    const pillCls={'planned':'pill-planned','done':'pill-done','skip':'pill-skip','reschedule':'pill-reschedule'}[status];
+    const pillLbl={'planned':'Planned','done':'Done','skip':'Skipped','reschedule':'Rescheduled'}[status];
+    if(!d.modules.length){
+      item.innerHTML=`<div class="li-date">${fmtS(d.dateStr)}</div><div class="li-content"><div class="li-title">${pillLbl}</div></div><div class="li-right"><span class="pill ${pillCls}">${pillLbl}</span></div>`;
+    } else {
+      const tags=d.modules.map(m=>`<span class="tag tag-${m.tag||'moderate'}">${m.tag||''}</span>`).join('');
+      const titles=d.modules.map(m=>m.title).join('<br>');
+      const det=[...new Set(d.modules.map(m=>m.detail))].join(' · ');
+      item.innerHTML=`<div class="li-date">${fmtS(d.dateStr)}</div><div class="li-content"><div class="li-title">${titles}${tags}</div><div class="li-detail">${det}</div></div><div class="li-right"><div class="li-hrs ${hrsCls}">${d.hrs}h</div><span class="pill ${pillCls}">${pillLbl}</span></div>`;
+    }
+    item.onclick=()=>openModal(d.dateStr,d);
+    panel.appendChild(item);
+  });
+}
+
+// ── MODAL ──────────────────────────────────────────────────────────
+let curDs=null,curSt='planned';
+
+function openModal(ds,dayData){
+  const plan=getPlan();if(!plan)return;
+  curDs=ds;
+  const dayState=(plan.state.dayStates||{})[ds]||{};
+  curSt=dayState.status||'planned';
+  document.getElementById('mDate').textContent=fmtD(ds);
+  document.getElementById('mTitle').textContent=
+    dayData.modules.length ? dayData.modules.map(m=>m.title).join(' + ') :
+    ({skip:'Day skipped',reschedule:'Day rescheduled'}[curSt]||'Rest day');
+  document.getElementById('mMeta').textContent=
+    dayData.modules.length ? `${dayData.hrs}h · ${dayData.isWeekend?'Weekend':'Weekday'}` : '';
+  document.getElementById('mNotes').value=dayState.notes||'';
+  renderStBtns(curSt);
+  // Modules + resources
+  const mDiv=document.getElementById('mMods');mDiv.innerHTML='';
+  if(!dayData.modules.length){
+    mDiv.innerHTML='<div style="font-family:var(--mono);font-size:11px;color:var(--muted);padding:6px 0">No modules scheduled this day.</div>';
+  } else {
+    dayData.modules.forEach(mod=>{
+      const card=document.createElement('div');card.className='mod-card';
+      const resources=(mod.resources||[]).map(r=>`
+        <a class="res-link" href="${r.url}" target="_blank" rel="noopener noreferrer">
+          <span class="res-icon">${RES_ICON[r.type]||'🔗'}</span>
+          <span class="res-body"><span class="res-title">${r.title}</span><span class="res-type">${r.type||'link'}</span></span>
+          <span class="res-arr">↗</span>
+        </a>`).join('');
+      const tagHtml=mod.tag?`<span class="tag tag-${mod.tag}">${mod.tag}</span>`:'';
+      card.innerHTML=`
+        <div class="mod-title">${mod.title}${tagHtml}</div>
+        <div class="mod-detail">${mod.detail}</div>
+        <div class="mod-hrs">${mod.hours}h</div>
+        ${mod.resources&&mod.resources.length?`<div class="section-lbl">Resources</div>${resources}`:'<div class="no-res">No resources linked for this module</div>'}`;
+      mDiv.appendChild(card);
+    });
+  }
+  document.getElementById('dayOverlay').classList.add('open');
+  document.body.style.overflow='hidden';
+}
+
+function renderStBtns(s){
+  document.querySelectorAll('.sbtn').forEach(b=>{
+    const bs=b.dataset.s;
+    b.className='sbtn'+(bs===s?' sel-'+s:'');
+  });
+}
+function setSt(s){curSt=s;renderStBtns(s)}
+function saveDay(){
+  const plan=getPlan();if(!plan||!curDs)return;
+  if(!plan.state.dayStates)plan.state.dayStates={};
+  plan.state.dayStates[curDs]={status:curSt,notes:document.getElementById('mNotes').value};
+  save();closeModal();renderAll();
+}
+function closeModal(){document.getElementById('dayOverlay').classList.remove('open');document.body.style.overflow='';curDs=null}
+function closeModalOut(e){if(e.target===document.getElementById('dayOverlay'))closeModal()}
+
+// ── IMPORT ─────────────────────────────────────────────────────────
+function openImport(){document.getElementById('importOverlay').classList.add('open')}
+function closeImport(){document.getElementById('importOverlay').classList.remove('open')}
+function closeImportOut(e){if(e.target===document.getElementById('importOverlay'))closeImport()}
+
+const dz=document.getElementById('dropZone');
+dz.addEventListener('dragover',e=>{e.preventDefault();dz.classList.add('drag-over')});
+dz.addEventListener('dragleave',()=>dz.classList.remove('drag-over'));
+dz.addEventListener('drop',e=>{e.preventDefault();dz.classList.remove('drag-over');const f=e.dataTransfer.files[0];if(f)readFile(f)});
+function handleFile(e){const f=e.target.files[0];if(f)readFile(f);e.target.value=''}
+
+function readFile(file){
+  const r=new FileReader();
+  r.onload=e=>{
+    try{
+      const plan=JSON.parse(e.target.result);
+      if(!plan.modules||!plan.title)throw new Error('Missing required fields: title, modules');
+      plan.modules=plan.modules.map(m=>({...m,hours:parseFloat(m.hours||m.hrs||2)}));
+      if(!plan.total_hours)plan.total_hours=plan.modules.reduce((s,m)=>s+m.hours,0);
+      const id='plan_'+Date.now();
+      plan.state={startDate:td(),wdHrs:2,weHrs:4,dayStates:{}};
+      APP.plans[id]=plan;APP.active=id;
+      save();closeImport();renderAll();
+    }catch(err){alert('Could not read plan file.\n\nMake sure it is a valid plan.json.\nError: '+err.message)}
+  };r.readAsText(file);
+}
+
+// ── CONTROLS ───────────────────────────────────────────────────────
+function resetDays(){
+  const plan=getPlan();if(!plan)return;
+  if(confirm('Reset all day statuses and notes for this plan?')){plan.state.dayStates={};save();renderAll()}
+}
+function exportSch(){
+  const plan=getPlan();if(!plan)return;
+  const sch=buildSch();
+  const out={plan:plan.title,exported:new Date().toISOString(),settings:{startDate:plan.state.startDate,wdHrs:plan.state.wdHrs,weHrs:plan.state.weHrs},schedule:sch.map(d=>({date:d.dateStr,status:d.status,hours:d.hrs,notes:d.notes,modules:d.modules.map(m=>m.title)}))};
+  const blob=new Blob([JSON.stringify(out,null,2)],{type:'application/json'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=`schedule_${plan.title.replace(/\s+/g,'_')}.json`;a.click();
+}
+function switchTab(id,btn){
+  ['calendar','list'].forEach(t=>document.getElementById('panel-'+t).style.display='none');
+  document.getElementById('panel-'+id).style.display='block';
+  document.querySelectorAll('.tab').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+}
+document.getElementById('startDate').addEventListener('change',e=>{const pl=getPlan();if(!pl)return;pl.state.startDate=e.target.value;pl.state.dayStates={};save();renderAll()});
+document.getElementById('wdHrs').addEventListener('change',e=>{const pl=getPlan();if(!pl)return;pl.state.wdHrs=parseFloat(e.target.value)||2;save();renderAll()});
+document.getElementById('weHrs').addEventListener('change',e=>{const pl=getPlan();if(!pl)return;pl.state.weHrs=parseFloat(e.target.value)||4;save();renderAll()});
+
+// ── BOOT WITH BUILT-IN PLAN ────────────────────────────────────────
+const BUILTIN={
+  "title":"Vibe Coding B2F","description":"Beginner to Fundamental: 8 modules","version":"1.0","total_hours":44,
+  "modules":[
+    {"id":1,"title":"Module 1 — The AI Ecosystem","short":"M1: Ecosystem","detail":"Tool categories, Copilot vs Cursor vs Claude, data privacy, secure setup, model selection","hours":3,"tag":"light","resources":[{"title":"GitHub Copilot Docs","url":"https://docs.github.com/en/copilot","type":"docs"},{"title":"Cursor Documentation","url":"https://docs.cursor.com","type":"docs"},{"title":"Anthropic Claude Docs","url":"https://docs.anthropic.com","type":"docs"}]},
+    {"id":2,"title":"Module 2 — How AI Fails (pt.1)","short":"M2: AI Fails 1","detail":"LLM mental model, training data, knowledge cutoffs, hallucination root causes","hours":2.5,"tag":"moderate","resources":[{"title":"Illustrated GPT-2 (LLM internals)","url":"https://jalammar.github.io/illustrated-gpt2/","type":"article"},{"title":"AI Hallucination — IBM Guide","url":"https://www.ibm.com/topics/ai-hallucinations","type":"article"}]},
+    {"id":3,"title":"Module 2 (pt.2) + Module 3 — Tokens","short":"M2+M3: Tokens","detail":"Failure categories, blast-radius warnings, tokens, context windows, cost awareness","hours":3.5,"tag":"moderate","resources":[{"title":"OpenAI Tokenizer Tool","url":"https://platform.openai.com/tokenizer","type":"tool"},{"title":"Understanding Context Windows","url":"https://help.openai.com/en/articles/4936856-what-are-tokens-and-how-to-count-them","type":"article"}]},
+    {"id":4,"title":"Module 4 — Prompt Engineering (pt.1)","short":"M4: Prompts 1","detail":"Prompt anatomy: persona, context, task, constraints, output format. System prompts and few-shot examples","hours":3,"tag":"heavy","resources":[{"title":"Anthropic Prompt Engineering Guide","url":"https://docs.anthropic.com/en/docs/build-with-claude/prompt-engineering/overview","type":"docs"},{"title":"Prompt Engineering Guide","url":"https://www.promptingguide.ai/","type":"article"}]},
+    {"id":5,"title":"Module 4 — Prompt Engineering (pt.2)","short":"M4: Prompts 2","detail":"Quality criteria, constraint specificity, acceptance criteria, deterministic output format, start prompt library","hours":3,"tag":"heavy","resources":[{"title":"Few-Shot Prompting","url":"https://www.promptingguide.ai/techniques/fewshot","type":"article"},{"title":"Chain-of-Thought Prompting","url":"https://www.promptingguide.ai/techniques/cot","type":"article"}]},
+    {"id":6,"title":"Module 4 — Prompt Engineering (pt.3)","short":"M4: Prompts 3","detail":"Prompting for code: language version, style, test inclusion. Version your prompt library with failure notes","hours":2,"tag":"heavy","resources":[{"title":"GitHub Copilot Best Practices","url":"https://docs.github.com/en/copilot/using-github-copilot/best-practices-for-using-github-copilot","type":"docs"}]},
+    {"id":7,"title":"Module 5 — Reviewing AI Code (pt.1)","short":"M5: Review 1","detail":"Different review posture. Nine categories 1–5: correctness, logic, edge cases, error handling, performance","hours":3,"tag":"heavy","resources":[{"title":"Google Code Review Guide","url":"https://google.github.io/eng-practices/review/","type":"article"},{"title":"OWASP Code Review Guide","url":"https://owasp.org/www-project-code-review-guide/","type":"docs"}]},
+    {"id":8,"title":"Module 5 — Reviewing AI Code (pt.2)","short":"M5: Review 2","detail":"Categories 6–9: security, maintainability, tests, docs. Hallucinated APIs, PR checklist template","hours":4,"tag":"heavy","resources":[{"title":"AI Security Risks — Semgrep Blog","url":"https://semgrep.dev/blog/2023/ai-security-risks","type":"article"},{"title":"Code Review Checklist","url":"https://github.com/mgreiler/code-review-checklist","type":"tool"}]},
+    {"id":9,"title":"Module 6 — Security (pt.1)","short":"M6: Security 1","detail":"AI security risk. Patterns 1–4: SQL injection, hardcoded credentials, insecure deserialisation, path traversal","hours":3,"tag":"heavy","resources":[{"title":"OWASP Top 10","url":"https://owasp.org/www-project-top-ten/","type":"docs"},{"title":"SQL Injection Prevention Cheatsheet","url":"https://cheatsheetseries.owasp.org/cheatsheets/SQL_Injection_Prevention_Cheat_Sheet.html","type":"docs"},{"title":"Snyk Vulnerability DB","url":"https://security.snyk.io/","type":"tool"}]},
+    {"id":10,"title":"Module 6 — Security (pt.2)","short":"M6: Security 2","detail":"Patterns 5–8: broken access control, missing validation, error disclosure, prompt injection","hours":3,"tag":"heavy","resources":[{"title":"Prompt Injection — Simon Willison","url":"https://simonwillison.net/2022/Sep/12/prompt-injection/","type":"article"},{"title":"OWASP Input Validation Cheatsheet","url":"https://cheatsheetseries.owasp.org/cheatsheets/Input_Validation_Cheat_Sheet.html","type":"docs"}]},
+    {"id":11,"title":"Module 6 — Security (pt.3) + Tooling","short":"M6: Semgrep","detail":"OWASP Top 10, Semgrep + Snyk, secrets scanning, pre-commit gate on a real repo","hours":3,"tag":"heavy","resources":[{"title":"Semgrep Getting Started","url":"https://semgrep.dev/docs/getting-started/","type":"tool"},{"title":"GitLeaks — Secrets Scanning","url":"https://github.com/gitleaks/gitleaks","type":"tool"},{"title":"Pre-commit Framework","url":"https://pre-commit.com/","type":"tool"}]},
+    {"id":12,"title":"Module 7 — Professional Workflow","short":"M7: Workflow","detail":"AI attribution commits, .cursorignore, dependency hygiene, CI toolchain, pre-deployment checklist","hours":3,"tag":"moderate","resources":[{"title":"Conventional Commits","url":"https://www.conventionalcommits.org/","type":"docs"},{"title":"Dependabot Docs","url":"https://docs.github.com/en/code-security/dependabot","type":"docs"},{"title":"GitHub Actions","url":"https://docs.github.com/en/actions","type":"docs"}]},
+    {"id":13,"title":"Module 8 — Testing AI Code (pt.1)","short":"M8: Testing 1","detail":"AI-testing-AI trap, writing tests independently as a quality gate, TDD with AI","hours":3,"tag":"heavy","resources":[{"title":"TDD with AI — Martin Fowler","url":"https://martinfowler.com/articles/2023-chatgpt-xu-hao.html","type":"article"},{"title":"Jest Getting Started","url":"https://jestjs.io/docs/getting-started","type":"docs"},{"title":"Pytest Docs","url":"https://docs.pytest.org/","type":"docs"}]},
+    {"id":14,"title":"Module 8 — Testing AI Code (pt.2)","short":"M8: Testing 2","detail":"Systematic edge case discovery, full TDD cycle: write failing test first, then prompt for implementation","hours":3,"tag":"heavy","resources":[{"title":"Hypothesis — Property Based Testing","url":"https://hypothesis.readthedocs.io/en/latest/","type":"docs"},{"title":"Boundary Value Analysis","url":"https://www.softwaretestinghelp.com/boundary-value-analysis-equivalence-partitioning/","type":"article"}]},
+    {"id":15,"title":"Consolidation — Prompt Library + PR Checklist","short":"Consolidation 1","detail":"Finalise prompt library (10+ prompts with failure notes), adapt PR checklist to your stack","hours":2,"tag":"buffer","resources":[]},
+    {"id":16,"title":"Consolidation — Security Audit","short":"Consolidation 2","detail":"Audit one real AI-generated module against all 8 vulnerability patterns, verify pre-commit hook","hours":2,"tag":"buffer","resources":[]},
+    {"id":17,"title":"Consolidation — CI Toolchain + Test Suite","short":"Consolidation 3","detail":"Verify CI toolchain is live, review the independent test suite for an AI-generated module","hours":2,"tag":"buffer","resources":[]},
+    {"id":18,"title":"Final Review — All Deliverables","short":"Final Review","detail":"Walk through every competency outcome from the syllabus. You are done with Level 1.","hours":2,"tag":"buffer","resources":[]}
+  ]
+};
+
+load();
+if(!Object.keys(APP.plans).length){
+  const id='plan_builtin';
+  BUILTIN.state={startDate:td(),wdHrs:2,weHrs:4,dayStates:{}};
+  APP.plans[id]=BUILTIN;APP.active=id;save();
+}
+renderAll();
+</script>
+</body>
+</html>
