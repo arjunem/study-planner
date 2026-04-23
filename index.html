@@ -23,21 +23,95 @@
   --teal:#22d3ee;--teal-bg:rgba(34,211,238,.1);--teal-b:rgba(34,211,238,.3);
   --r:10px;--rsm:6px;--mono:'DM Mono',monospace;--sans:'Syne',sans-serif;
 }
-body.light{
-  --bg:#f2f2f7;--surface:#ffffff;--surface2:#e8e8f0;
-  --border:#d4d4e0;--border2:#b8b8cc;
-  --text:#1c1c2e;--muted:#4a4a62;--faint:#c0c0d0;
+/* ── LIGHT THEMES ───────────────────────────────────────────────── */
+body.light[data-theme="light"]{
+  --bg:#f2f2f7;--surface:#fff;--surface2:#e8e8f0;
+  --border:#d4d4e0;--border2:#b8b8cc;--faint:#d0d0da;
+  --text:#1c1c2e;--muted:#4a4a62;
   --accent:#4c1d95;--accent2:#5b21b6;
   --accent-bg:rgba(76,29,149,.1);--accent-b:rgba(76,29,149,.3);
-  --green:#065f46;--green-bg:rgba(6,95,70,.1);--green-b:rgba(6,95,70,.3);
-  --amber:#92400e;--amber-bg:rgba(146,64,14,.1);--amber-b:rgba(146,64,14,.3);
+  --green:#15803d;--green-bg:rgba(21,128,61,.1);--green-b:rgba(21,128,61,.3);
+  --amber:#b45309;--amber-bg:rgba(180,83,9,.1);--amber-b:rgba(180,83,9,.3);
   --red:#991b1b;--red-bg:rgba(153,27,27,.1);--red-b:rgba(153,27,27,.3);
   --teal:#0e7490;--teal-bg:rgba(14,116,144,.1);--teal-b:rgba(14,116,144,.3);
 }
+body.light[data-theme="light"] .c{border-color:#c8c8d8;background:#fff!important}
+body.light[data-theme="light"] .c.empty{background:transparent!important;border-color:transparent}
+body.light[data-theme="light"] .c.no-study{background:#eaeaf4!important;opacity:1}
+body.light[data-theme="light"] .c.wd{border-color:#0e7490;background:#e0f7fa!important}
+body.light[data-theme="light"] .c.we{border-color:#5b21b6;background:#ede8fd!important}
+
+body.light[data-theme="paper"]{
+  --bg:#faf8f4;--surface:#fff;--surface2:#f2ede4;
+  --border:#e0d8cc;--border2:#c8bfb0;--faint:#d8cfbf;
+  --text:#2d1f0e;--muted:#6b5e4e;
+  --accent:#6d28d9;--accent2:#7c3aed;
+  --accent-bg:rgba(109,40,217,.1);--accent-b:rgba(109,40,217,.3);
+  --green:#15803d;--green-bg:rgba(21,128,61,.1);--green-b:rgba(21,128,61,.3);
+  --amber:#b45309;--amber-bg:rgba(180,83,9,.1);--amber-b:rgba(180,83,9,.3);
+  --red:#b91c1c;--red-bg:rgba(185,28,28,.1);--red-b:rgba(185,28,28,.3);
+  --teal:#0f766e;--teal-bg:rgba(15,118,110,.1);--teal-b:rgba(15,118,110,.3);
+}
+body.light[data-theme="paper"] .c{border-color:#d8d0c4;background:#fff!important}
+body.light[data-theme="paper"] .c.empty{background:transparent!important;border-color:transparent}
+body.light[data-theme="paper"] .c.no-study{background:#ede8df!important;opacity:1}
+body.light[data-theme="paper"] .c.wd{border-color:#0f766e;background:#e6f4f2!important}
+body.light[data-theme="paper"] .c.we{border-color:#7c3aed;background:#ede9fb!important}
+
+body.light[data-theme="slate"]{
+  --bg:#f1f5f9;--surface:#fff;--surface2:#e2e8f0;
+  --border:#cbd5e1;--border2:#94a3b8;--faint:#b0bec8;
+  --text:#0f172a;--muted:#475569;
+  --accent:#4338ca;--accent2:#4f46e5;
+  --accent-bg:rgba(67,56,202,.1);--accent-b:rgba(67,56,202,.3);
+  --green:#15803d;--green-bg:rgba(21,128,61,.1);--green-b:rgba(21,128,61,.3);
+  --amber:#b45309;--amber-bg:rgba(180,83,9,.1);--amber-b:rgba(180,83,9,.3);
+  --red:#be123c;--red-bg:rgba(190,18,60,.1);--red-b:rgba(190,18,60,.3);
+  --teal:#0369a1;--teal-bg:rgba(3,105,161,.1);--teal-b:rgba(3,105,161,.3);
+}
+body.light[data-theme="slate"] .c{border-color:#c4cdd8;background:#fff!important}
+body.light[data-theme="slate"] .c.empty{background:transparent!important;border-color:transparent}
+body.light[data-theme="slate"] .c.no-study{background:#e4ecf4!important;opacity:1}
+body.light[data-theme="slate"] .c.wd{border-color:#0369a1;background:#e0f2fe!important}
+body.light[data-theme="slate"] .c.we{border-color:#4338ca;background:#eef2ff!important}
+
+body.light[data-theme="forest"]{
+  --bg:#f0f9f4;--surface:#fff;--surface2:#e0f2ea;
+  --border:#bbddc8;--border2:#86c49a;--faint:#a8d4b8;
+  --text:#0c2018;--muted:#386449;
+  --accent:#166534;--accent2:#16a34a;
+  --accent-bg:rgba(22,101,52,.1);--accent-b:rgba(22,101,52,.3);
+  --green:#14532d;--green-bg:rgba(20,83,45,.1);--green-b:rgba(20,83,45,.3);
+  --amber:#92400e;--amber-bg:rgba(146,64,14,.1);--amber-b:rgba(146,64,14,.3);
+  --red:#991b1b;--red-bg:rgba(153,27,27,.1);--red-b:rgba(153,27,27,.3);
+  --teal:#134e4a;--teal-bg:rgba(19,78,74,.1);--teal-b:rgba(19,78,74,.3);
+}
+body.light[data-theme="forest"] .c{border-color:#b0d8bc;background:#fff!important}
+body.light[data-theme="forest"] .c.empty{background:transparent!important;border-color:transparent}
+body.light[data-theme="forest"] .c.no-study{background:#e0eeea!important;opacity:1}
+body.light[data-theme="forest"] .c.wd{border-color:#16a34a;background:#dcfce7!important}
+body.light[data-theme="forest"] .c.we{border-color:#6d28d9;background:#ede9fb!important}
+
+body.light[data-theme="rose"]{
+  --bg:#fff5f7;--surface:#fff;--surface2:#fce8ed;
+  --border:#f5c6d3;--border2:#e89ab0;--faint:#e8b0c4;
+  --text:#2d0818;--muted:#7d3352;
+  --accent:#9d174d;--accent2:#be185d;
+  --accent-bg:rgba(157,23,77,.1);--accent-b:rgba(157,23,77,.3);
+  --green:#15803d;--green-bg:rgba(21,128,61,.1);--green-b:rgba(21,128,61,.3);
+  --amber:#b45309;--amber-bg:rgba(180,83,9,.1);--amber-b:rgba(180,83,9,.3);
+  --red:#991b1b;--red-bg:rgba(153,27,27,.1);--red-b:rgba(153,27,27,.3);
+  --teal:#0e7490;--teal-bg:rgba(14,116,144,.1);--teal-b:rgba(14,116,144,.3);
+}
+body.light[data-theme="rose"] .c{border-color:#e8b8c8;background:#fff!important}
+body.light[data-theme="rose"] .c.empty{background:transparent!important;border-color:transparent}
+body.light[data-theme="rose"] .c.no-study{background:#fde8ee!important;opacity:1}
+body.light[data-theme="rose"] .c.wd{border-color:#0e7490;background:#e0f9fb!important}
+body.light[data-theme="rose"] .c.we{border-color:#9d174d;background:#fce7f0!important}
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 body{background:var(--bg);color:var(--text);font-family:var(--sans);min-height:100vh;overflow-x:hidden;transition:background .2s,color .2s}
 body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(rgba(124,109,250,.025) 1px,transparent 1px),linear-gradient(90deg,rgba(124,109,250,.025) 1px,transparent 1px);background-size:40px 40px;pointer-events:none;z-index:0}
-body.light::before{background-image:linear-gradient(rgba(124,109,250,.08) 1px,transparent 1px),linear-gradient(90deg,rgba(124,109,250,.08) 1px,transparent 1px)}
+body.light::before{background-image:linear-gradient(rgba(0,0,0,.06) 1px,transparent 1px),linear-gradient(90deg,rgba(0,0,0,.06) 1px,transparent 1px)}
 body.light .ctrl input{color-scheme:light}
 .app{position:relative;z-index:1;max-width:960px;margin:0 auto;padding:20px 16px 100px}
 
@@ -53,6 +127,8 @@ h1 span{color:var(--accent2)}
 .hdr-btn{font-family:var(--mono);font-size:11px;padding:8px 14px;border-radius:var(--rsm);border:1px solid var(--border2);background:transparent;color:var(--muted);cursor:pointer;transition:all .2s;white-space:nowrap}
 .hdr-btn:hover,.hdr-btn:active{border-color:var(--accent2);color:var(--accent2)}
 .hdr-btn.primary{background:var(--accent-bg);border-color:var(--accent-b);color:var(--accent2)}
+.theme-select{font-family:var(--mono);font-size:11px;padding:7px 10px;border-radius:var(--rsm);border:1px solid var(--border2);background:var(--surface2);color:var(--muted);cursor:pointer;outline:none;-webkit-appearance:none;appearance:none;transition:all .2s;display:none}
+.theme-select:hover,.theme-select:focus{border-color:var(--accent2);color:var(--accent2)}
 
 /* PLAN BAR */
 .plan-bar{display:flex;gap:6px;margin-bottom:16px;overflow-x:auto;padding-bottom:4px;align-items:center}
@@ -115,11 +191,6 @@ h1 span{color:var(--accent2)}
 .c.no-study{background:var(--surface);cursor:default;opacity:.2;pointer-events:none}
 .c.wd{border-color:rgba(34,211,238,.2);background:rgba(34,211,238,.03)}
 .c.we{border-color:rgba(124,109,250,.25);background:rgba(124,109,250,.04)}
-body.light .c{border-color:#c0c0d0;background:#ffffff!important}
-body.light .c.empty{background:transparent!important;border-color:transparent}
-body.light .c.no-study{background:#ececf3!important;opacity:1}
-body.light .c.wd{border-color:#0e7490;background:#e4f9fb!important}
-body.light .c.we{border-color:#5b21b6;background:#ebe8fd!important}
 .c.st-done{border-color:var(--green-b)!important;background:var(--green-bg)!important}
 .c.st-skip{border-color:var(--red-b)!important;background:var(--red-bg)!important}
 .c.st-reschedule{border-color:var(--amber-b)!important;background:var(--amber-bg)!important}
@@ -243,7 +314,14 @@ body.light .c.we{border-color:#5b21b6;background:#ebe8fd!important}
       <div class="plan-subtitle" id="planSubtitle">Import a plan to get started</div>
     </div>
     <div class="hdr-btns">
-      <button class="hdr-btn" id="themeBtn" onclick="toggleTheme()" title="Toggle light / dark theme">☀</button>
+      <button class="hdr-btn" id="themeBtn" onclick="toggleTheme()" title="Toggle light / dark">☀</button>
+      <select class="theme-select" id="themeSelect" onchange="setLightTheme(this.value)" title="Choose light theme">
+        <option value="light">Light</option>
+        <option value="paper">Paper</option>
+        <option value="slate">Slate</option>
+        <option value="forest">Forest</option>
+        <option value="rose">Rose</option>
+      </select>
       <button class="hdr-btn" onclick="openImport()">+ Import plan</button>
       <button class="hdr-btn primary" onclick="exportSch()">↓ Export</button>
     </div>
@@ -342,15 +420,29 @@ body.light .c.we{border-color:#5b21b6;background:#ebe8fd!important}
 <script>
 // ── THEME ──────────────────────────────────────────────────────────
 const THEME_KEY='studyplanner_theme';
-function applyTheme(t){
-  document.body.classList.toggle('light',t==='light');
-  document.getElementById('themeBtn').textContent=t==='light'?'◑':'☀';
+const LTHEME_KEY='studyplanner_ltheme';
+function applyTheme(mode,lt){
+  const isLight=mode==='light';
+  document.body.classList.toggle('light',isLight);
+  document.body.dataset.theme=isLight?(lt||'light'):'';
+  document.getElementById('themeBtn').textContent=isLight?'◑':'☀';
+  const sel=document.getElementById('themeSelect');
+  sel.style.display=isLight?'inline-block':'none';
+  if(isLight)sel.value=lt||'light';
 }
 function toggleTheme(){
   const next=document.body.classList.contains('light')?'dark':'light';
-  localStorage.setItem(THEME_KEY,next);applyTheme(next);
+  const lt=localStorage.getItem(LTHEME_KEY)||'light';
+  localStorage.setItem(THEME_KEY,next);applyTheme(next,lt);
 }
-applyTheme(localStorage.getItem(THEME_KEY)||'dark');
+function setLightTheme(lt){
+  localStorage.setItem(LTHEME_KEY,lt);
+  document.body.dataset.theme=lt;
+}
+const _sysDark=window.matchMedia('(prefers-color-scheme: dark)').matches;
+const _mode=localStorage.getItem(THEME_KEY)||(_sysDark?'dark':'light');
+const _lt=localStorage.getItem(LTHEME_KEY)||'light';
+applyTheme(_mode,_lt);
 
 // ── STORE ──────────────────────────────────────────────────────────
 const SK='studyplanner_v2';
