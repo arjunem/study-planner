@@ -127,6 +127,7 @@ h1 span{color:var(--accent2)}
 .hdr-btn{font-family:var(--mono);font-size:11px;padding:8px 14px;border-radius:var(--rsm);border:1px solid var(--border2);background:transparent;color:var(--muted);cursor:pointer;transition:all .2s;white-space:nowrap}
 .hdr-btn:hover,.hdr-btn:active{border-color:var(--accent2);color:var(--accent2)}
 .hdr-btn.primary{background:var(--accent-bg);border-color:var(--accent-b);color:var(--accent2)}
+.hdr-btn.danger:hover,.hdr-btn.danger:active{border-color:var(--red-b);color:var(--red);background:var(--red-bg)}
 .theme-select{font-family:var(--mono);font-size:11px;padding:7px 10px;border-radius:var(--rsm);border:1px solid var(--border2);background:var(--surface2);color:var(--muted);cursor:pointer;outline:none;-webkit-appearance:none;appearance:none;transition:all .2s;display:none}
 .theme-select:hover,.theme-select:focus{border-color:var(--accent2);color:var(--accent2)}
 
@@ -321,6 +322,7 @@ h1 span{color:var(--accent2)}
       </select>
       <button class="hdr-btn" onclick="openImport()">+ Import plan</button>
       <button class="hdr-btn primary" onclick="exportSch()">↓ Export</button>
+      <button class="hdr-btn danger" onclick="clearData()" title="Delete all plans and reset the app">⊗ Clear data</button>
     </div>
   </div>
 
@@ -738,6 +740,12 @@ function exportSch(){
   const out={plan:plan.title,exported:new Date().toISOString(),settings:{startDate:plan.state.startDate,wdHrs:plan.state.wdHrs,weHrs:plan.state.weHrs},schedule:sch.map(d=>({date:d.dateStr,status:d.status,hours:d.hrs,notes:d.notes,modules:d.modules.map(m=>m.title)}))};
   const blob=new Blob([JSON.stringify(out,null,2)],{type:'application/json'});
   const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=`schedule_${plan.title.replace(/\s+/g,'_')}.json`;a.click();
+}
+function clearData(){
+  if(!confirm('This will permanently delete all plans, progress and notes stored in this browser.\n\nContinue?'))return;
+  localStorage.removeItem(SK);
+  APP={plans:{},active:null};
+  renderAll();
 }
 function switchTab(id,btn){
   ['calendar','list'].forEach(t=>document.getElementById('panel-'+t).style.display='none');
