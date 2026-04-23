@@ -116,15 +116,23 @@ body.light .ctrl input{color-scheme:light}
 .app{position:relative;z-index:1;max-width:960px;margin:0 auto;padding:20px 16px 100px}
 
 /* HEADER */
-.hdr{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:18px;flex-wrap:wrap}
+.hdr{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:18px}
+.hdr-left{min-width:0;flex:1}
 .logo-tag{font-family:var(--mono);font-size:10px;color:var(--accent2);letter-spacing:.15em;text-transform:uppercase;margin-bottom:6px;display:flex;align-items:center;gap:6px}
 .logo-tag::before{content:'';width:6px;height:6px;background:var(--accent);border-radius:50%;animation:pulse 2s ease-in-out infinite;flex-shrink:0}
 @keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(.8)}}
 h1{font-size:clamp(20px,4vw,28px);font-weight:700;letter-spacing:-.02em;line-height:1.1}
 h1 span{color:var(--accent2)}
 .plan-subtitle{font-family:var(--mono);font-size:11px;color:var(--muted);margin-top:4px}
-.hdr-btns{display:flex;gap:8px;flex-wrap:wrap;align-items:flex-start;padding-top:4px}
-.hdr-btn{font-family:var(--mono);font-size:11px;padding:8px 14px;border-radius:var(--rsm);border:1px solid var(--border2);background:transparent;color:var(--muted);cursor:pointer;transition:all .2s;white-space:nowrap}
+.hdr-btns{display:flex;gap:6px;align-items:center;flex-shrink:0}
+.hdr-btn{font-family:var(--mono);font-size:11px;padding:8px 12px;border-radius:var(--rsm);border:1px solid var(--border2);background:transparent;color:var(--muted);cursor:pointer;transition:all .2s;white-space:nowrap}
+@media(max-width:540px){
+  .hdr{flex-wrap:wrap}
+  .hdr-left{width:100%}
+  .hdr-btns{width:100%;justify-content:flex-end}
+  .hdr-btn{font-size:10px;padding:6px 9px}
+  .theme-select{font-size:10px;padding:5px 7px;max-width:72px}
+}
 .hdr-btn:hover,.hdr-btn:active{border-color:var(--accent2);color:var(--accent2)}
 .hdr-btn.primary{background:var(--accent-bg);border-color:var(--accent-b);color:var(--accent2)}
 .hdr-btn.danger:hover,.hdr-btn.danger:active{border-color:var(--red-b);color:var(--red);background:var(--red-bg)}
@@ -322,7 +330,7 @@ h1 span{color:var(--accent2)}
       </select>
       <button class="hdr-btn" onclick="openImport()">+ Import plan</button>
       <button class="hdr-btn primary" onclick="exportSch()">↓ Export</button>
-      <button class="hdr-btn danger" onclick="clearData()" title="Delete all plans and reset the app">⊗ Clear data</button>
+      <button class="hdr-btn danger" onclick="clearData()" title="Clear all data">⊗</button>
     </div>
   </div>
 
