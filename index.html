@@ -349,11 +349,20 @@ h1 span{color:var(--accent2)}
 .set-btn[disabled]{opacity:.5;cursor:not-allowed}
 .toast{position:fixed;left:50%;bottom:22px;transform:translateX(-50%) translateY(10px);background:var(--surface);border:1px solid var(--border2);color:var(--text);padding:10px 14px;border-radius:999px;font-family:var(--mono);font-size:11px;box-shadow:0 12px 32px rgba(0,0,0,.35);opacity:0;pointer-events:none;transition:opacity .2s,transform .2s;z-index:300;max-width:min(92vw,520px);text-align:center}
 .toast.open{opacity:1;transform:translateX(-50%) translateY(0)}
+.toast.error{background:var(--red-bg);border-color:var(--red-b);color:var(--red)}
 #syncLoader{position:fixed;inset:0;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;z-index:999;opacity:1;transition:opacity .3s}
 #syncLoader.hidden{opacity:0;pointer-events:none}
 #syncLoader .spin{width:32px;height:32px;border:2px solid var(--border2);border-top-color:var(--accent);border-radius:50%;animation:spin .7s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
 #syncLoader span{font-family:var(--mono);font-size:11px;color:var(--muted)}
+.toggle-wrap{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+.toggle-switch{position:relative;display:inline-block;width:36px;height:20px;flex-shrink:0}
+.toggle-switch input{opacity:0;width:0;height:0;position:absolute}
+.toggle-slider{position:absolute;cursor:pointer;inset:0;background:var(--surface2);border:1px solid var(--border2);border-radius:20px;transition:.2s}
+.toggle-slider:before{content:'';position:absolute;width:13px;height:13px;left:3px;top:3px;background:var(--muted);border-radius:50%;transition:.2s}
+.toggle-switch input:checked+.toggle-slider{background:var(--accent-bg);border-color:var(--accent-b)}
+.toggle-switch input:checked+.toggle-slider:before{transform:translateX(15px);background:var(--accent2)}
+.cred-input:disabled{opacity:.45;cursor:not-allowed}
 #fileInput{display:none}
 </style>
 </head>
@@ -508,20 +517,25 @@ h1 span{color:var(--accent2)}
       </div>
       <div class="set-row">
         <div class="set-copy" style="width:100%">
-          <div class="set-title">Cloud sync URL</div>
-          <div class="set-sub">On load, the app fetches this URL and replaces local data. Use a GitHub Gist raw URL.<br>Format: <code>https://gist.githubusercontent.com/USER/ID/raw/studyplanner_data.json</code></div>
-          <div class="ctrl" style="margin-top:8px">
-            <input type="url" id="driveSyncUrl" placeholder="https://gist.githubusercontent.com/…" style="width:100%">
+          <div class="toggle-wrap">
+            <div class="set-title">Cloud sync credentials</div>
+            <label class="toggle-switch" title="Enable editing">
+              <input type="checkbox" id="credEditToggle">
+              <span class="toggle-slider"></span>
+            </label>
           </div>
-          <div class="set-title" style="margin-top:14px">Gist upload</div>
-          <div class="set-sub">Gist ID and GitHub token (gist scope). Filled automatically when you push — Sync now also uploads to Gist.</div>
+          <div class="set-sub" style="margin-bottom:10px">Toggle to edit. Changes are saved immediately.</div>
           <div class="ctrl" style="margin-top:8px">
             <label>Gist ID</label>
-            <input type="text" id="gistId" placeholder="c2d304061e49ce7e5a94457c5d11bd94" style="width:100%">
+            <input type="text" id="gistId" class="cred-input" value="c2d304061e49ce7e5a94457c5d11bd94" disabled style="width:100%">
           </div>
           <div class="ctrl" style="margin-top:8px">
             <label>GitHub token</label>
-            <input type="password" id="gistToken" placeholder="ghp_…" style="width:100%">
+            <input type="password" id="gistToken" class="cred-input" value="" disabled style="width:100%">
+          </div>
+          <div class="ctrl" style="margin-top:8px">
+            <label>Cloud sync URL (auto-filled on first push)</label>
+            <input type="url" id="driveSyncUrl" class="cred-input" value="" disabled style="width:100%">
           </div>
         </div>
       </div>
@@ -650,13 +664,14 @@ function fmtD(ds){const d=new Date(ds+'T00:00:00');return`${DAYS[d.getDay()]}, $
 function fmtS(ds){const d=new Date(ds+'T00:00:00');return`${DAYS[d.getDay()]} ${d.getDate()} ${MS[d.getMonth()]}`}
 function getPlan(){return APP.plans[APP.active]}
 function getState(){const pl=getPlan();return pl?pl.state:{dayStates:{},moduleStates:{},startDate:td(),wdHrs:2,weHrs:4}}
-function showToast(msg){
+function showToast(msg,type){
   const el=document.getElementById('toast');
   if(!el)return;
   el.textContent=msg;
+  el.classList.toggle('error',type==='error');
   el.classList.add('open');
   clearTimeout(toastTimer);
-  toastTimer=setTimeout(()=>el.classList.remove('open'),2500);
+  toastTimer=setTimeout(()=>{el.classList.remove('open','error')},type==='error'?4500:2500);
 }
 function normDayStatus(s){
   if(s==='done')return'completed';
@@ -774,7 +789,12 @@ async function tryDriveSync(){
     showToast('Synced');
     return true;
   }catch(e){
-    showToast('Cloud sync failed — using local data');
+    const reason=e.name==='AbortError'?'request timed out':
+      e.message==='HTTP 401'?'invalid token':
+      e.message==='HTTP 403'?'access denied':
+      e.message==='HTTP 404'?'Gist not found':
+      e.message||'unknown error';
+    showToast('Sync failed: '+reason,'error');
     return false;
   }
 }
@@ -894,12 +914,6 @@ function renderAll(){
   document.getElementById('startDate').value=st.startDate||td();
   document.getElementById('wdHrs').value=st.wdHrs||2;
   document.getElementById('weHrs').value=st.weHrs||4;
-  const _dsu=document.getElementById('driveSyncUrl');
-  if(_dsu)_dsu.value=localStorage.getItem(DRIVE_URL_KEY)||'';
-  const _gid=document.getElementById('gistId');
-  if(_gid)_gid.value=localStorage.getItem(GIST_ID_KEY)||'';
-  const _gtk=document.getElementById('gistToken');
-  if(_gtk)_gtk.value=localStorage.getItem(GIST_TOKEN_KEY)||'';
   renderModuleEditor(plan);
   const sch=buildSch();
   renderSummary(sch,plan);
@@ -1398,11 +1412,34 @@ function syncActiveTabUI(){
 document.getElementById('startDate').addEventListener('change',e=>{const pl=getPlan();if(!pl)return;pl.state.startDate=e.target.value;pl.state.dayStates={};save();renderAll()});
 document.getElementById('wdHrs').addEventListener('change',e=>{const pl=getPlan();if(!pl)return;pl.state.wdHrs=parseFloat(e.target.value)||2;save();renderAll()});
 document.getElementById('weHrs').addEventListener('change',e=>{const pl=getPlan();if(!pl)return;pl.state.weHrs=parseFloat(e.target.value)||4;save();renderAll()});
-document.getElementById('driveSyncUrl').addEventListener('change',function(){const v=this.value.trim();if(v)localStorage.setItem(DRIVE_URL_KEY,v);else localStorage.removeItem(DRIVE_URL_KEY);});
-document.getElementById('gistId').addEventListener('change',function(){const v=this.value.trim();if(v)localStorage.setItem(GIST_ID_KEY,v);else localStorage.removeItem(GIST_ID_KEY);});
-document.getElementById('gistToken').addEventListener('change',function(){const v=this.value.trim();if(v)localStorage.setItem(GIST_TOKEN_KEY,v);else localStorage.removeItem(GIST_TOKEN_KEY);});
+function seedCredentials(){
+  const fields=[
+    {id:'gistId',key:GIST_ID_KEY,seedFromHtml:true},
+    {id:'gistToken',key:GIST_TOKEN_KEY,seedFromHtml:false},
+    {id:'driveSyncUrl',key:DRIVE_URL_KEY,seedFromHtml:true}
+  ];
+  fields.forEach(({id,key,seedFromHtml})=>{
+    const el=document.getElementById(id);
+    if(!el)return;
+    const stored=localStorage.getItem(key);
+    if(stored){el.value=stored;}
+    else if(seedFromHtml&&el.value.trim()){localStorage.setItem(key,el.value.trim());}
+  });
+}
+document.getElementById('credEditToggle').addEventListener('change',function(){
+  const enabled=this.checked;
+  document.querySelectorAll('.cred-input').forEach(el=>el.disabled=!enabled);
+});
+['gistId','gistToken','driveSyncUrl'].forEach(id=>{
+  document.getElementById(id).addEventListener('change',function(){
+    const keys={gistId:GIST_ID_KEY,gistToken:GIST_TOKEN_KEY,driveSyncUrl:DRIVE_URL_KEY};
+    const v=this.value.trim();
+    if(v)localStorage.setItem(keys[id],v);else localStorage.removeItem(keys[id]);
+  });
+});
 
 load();
+seedCredentials();
 (async function(){
   const loader=document.getElementById('syncLoader');
   const hasSyncUrl=localStorage.getItem(DRIVE_URL_KEY);
