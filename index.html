@@ -1211,7 +1211,12 @@ function openImport(){document.getElementById('importOverlay').classList.add('op
 function closeImport(){document.getElementById('importOverlay').classList.remove('open')}
 function closeImportOut(e){if(e.target===document.getElementById('importOverlay'))closeImport()}
 function openSettings(){document.getElementById('settingsOverlay').classList.add('open');renderSettings()}
-function closeSettings(){document.getElementById('settingsOverlay').classList.remove('open')}
+function closeSettings(){
+  document.getElementById('settingsOverlay').classList.remove('open');
+  const tog=document.getElementById('credEditToggle');
+  if(tog)tog.checked=false;
+  document.querySelectorAll('.cred-input').forEach(el=>el.disabled=true);
+}
 function closeSettingsOut(e){if(e.target===document.getElementById('settingsOverlay'))closeSettings()}
 
 const dz=document.getElementById('dropZone');
@@ -1370,6 +1375,7 @@ async function syncToFolder(){
     const json=JSON.stringify(buildFullBackup(),null,2);
     await uploadToGist(json);
     showToast('Pushed to Gist ✓');
+    closeSettings();
   }catch(e){
     showToast('Gist push failed: '+e.message);
   }
