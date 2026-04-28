@@ -534,8 +534,8 @@ h1 span{color:var(--accent2)}
             <input type="password" id="gistToken" class="cred-input" value="" disabled style="width:100%">
           </div>
           <div class="ctrl" style="margin-top:8px">
-            <label>Cloud sync URL (auto-filled on first push)</label>
-            <input type="url" id="driveSyncUrl" class="cred-input" value="" disabled style="width:100%">
+            <label>Cloud sync URL</label>
+            <input type="url" id="driveSyncUrl" class="cred-input" value="https://gist.githubusercontent.com/arjunem/c2d304061e49ce7e5a94457c5d11bd94/raw/studyplanner_data.json" disabled style="width:100%">
           </div>
         </div>
       </div>
@@ -774,10 +774,16 @@ async function fetchSyncData(url){
 }
 async function tryDriveSync(){
   const url=localStorage.getItem(DRIVE_URL_KEY);
-  if(!url||!url.startsWith('http'))return false;
+  const gistId=localStorage.getItem(GIST_ID_KEY);
+  const token=localStorage.getItem(GIST_TOKEN_KEY);
+  const canSync=(url&&url.startsWith('http'))||(gistId&&token);
+  if(!canSync){
+    if(gistId&&!token)showToast('Enter GitHub token in settings to enable sync','error');
+    return false;
+  }
   try{
     showToast('Syncing…');
-    const data=await fetchSyncData(url);
+    const data=await fetchSyncData(url||'');
     if(!isBackupFile(data))throw new Error('Not a backup file');
     const gistId=localStorage.getItem(GIST_ID_KEY);
     const gistToken=localStorage.getItem(GIST_TOKEN_KEY);
@@ -1442,8 +1448,8 @@ load();
 seedCredentials();
 (async function(){
   const loader=document.getElementById('syncLoader');
-  const hasSyncUrl=localStorage.getItem(DRIVE_URL_KEY);
-  if(!hasSyncUrl&&loader)loader.classList.add('hidden');
+  const hasSync=(localStorage.getItem(DRIVE_URL_KEY)||''). startsWith('http')||(localStorage.getItem(GIST_ID_KEY)&&localStorage.getItem(GIST_TOKEN_KEY));
+  if(!hasSync&&loader)loader.classList.add('hidden');
   await tryDriveSync();
   if(loader)loader.classList.add('hidden');
   renderAll();
