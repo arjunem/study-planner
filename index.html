@@ -124,6 +124,7 @@ body.light .ctrl input{color-scheme:light}
 h1{font-size:clamp(20px,4vw,28px);font-weight:700;letter-spacing:-.02em;line-height:1.1}
 h1 span{color:var(--accent2)}
 .plan-subtitle{font-family:var(--mono);font-size:11px;color:var(--muted);margin-top:4px}
+.last-sync-label{font-family:var(--mono);font-size:10px;color:var(--muted);margin-top:2px;min-height:14px;opacity:.7}
 .hdr-btns{display:flex;gap:6px;align-items:center;flex-shrink:0}
 .hdr-btn{font-family:var(--mono);font-size:11px;padding:8px 12px;border-radius:var(--rsm);border:1px solid var(--border2);background:transparent;color:var(--muted);cursor:pointer;transition:all .2s;white-space:nowrap}
 @media(max-width:540px){
@@ -373,6 +374,7 @@ h1 span{color:var(--accent2)}
       <div class="logo-tag">Universal Study Planner</div>
       <h1>Study <span>Planner</span></h1>
       <div class="plan-subtitle" id="planSubtitle">Import a plan to get started</div>
+      <div id="lastSyncLabel" class="last-sync-label"></div>
     </div>
     <div class="hdr-btns">
       <button class="hdr-btn" id="themeBtn" onclick="toggleTheme()" title="Toggle light / dark">☀</button>
@@ -561,6 +563,7 @@ const SYNC_KEY='dir';
 const DRIVE_URL_KEY='studyplanner_drive_url';
 const GIST_ID_KEY='studyplanner_gist_id';
 const GIST_TOKEN_KEY='studyplanner_gist_token';
+const LAST_SYNC_KEY='studyplanner_last_sync';
 function applyTheme(mode,lt){
   const isLight=mode==='light';
   document.body.classList.toggle('light',isLight);
@@ -765,11 +768,15 @@ async function tryDriveSync(){
     if(!isBackupFile(data))throw new Error('Not a backup file');
     const gistId=localStorage.getItem(GIST_ID_KEY);
     const gistToken=localStorage.getItem(GIST_TOKEN_KEY);
+    const lastSync=localStorage.getItem(LAST_SYNC_KEY);
     localStorage.clear();
     localStorage.setItem(DRIVE_URL_KEY,url);
     if(gistId)localStorage.setItem(GIST_ID_KEY,gistId);
     if(gistToken)localStorage.setItem(GIST_TOKEN_KEY,gistToken);
+    if(lastSync)localStorage.setItem(LAST_SYNC_KEY,lastSync);
     importBackup(data);
+    localStorage.setItem(LAST_SYNC_KEY,Date.now());
+    updateLastSyncLabel();
     showToast('Synced');
     return true;
   }catch(e){
@@ -783,6 +790,18 @@ async function tryDriveSync(){
   }
 }
 
+function updateLastSyncLabel(){
+  const el=document.getElementById('lastSyncLabel');
+  if(!el)return;
+  const ts=localStorage.getItem(LAST_SYNC_KEY);
+  if(!ts){el.textContent='';return;}
+  const diff=Math.floor((Date.now()-parseInt(ts))/1000);
+  const text=diff<60?'synced just now':
+    diff<3600?'synced '+Math.floor(diff/60)+'m ago':
+    diff<86400?'synced '+Math.floor(diff/3600)+'h ago':
+    'synced '+Math.floor(diff/86400)+'d ago';
+  el.textContent=text;
+}
 async function manualSync(){
   const loader=document.getElementById('syncLoader');
   if(loader)loader.classList.remove('hidden');
@@ -1440,6 +1459,7 @@ document.getElementById('credEditToggle').addEventListener('change',function(){
 
 load();
 seedCredentials();
+updateLastSyncLabel();
 (async function(){
   const loader=document.getElementById('syncLoader');
   const hasSync=(localStorage.getItem(DRIVE_URL_KEY)||'').startsWith('http');
