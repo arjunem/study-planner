@@ -748,25 +748,8 @@ function importBackup(data){
 }
 
 async function fetchSyncData(url){
-  const gistId=localStorage.getItem(GIST_ID_KEY);
-  const token=localStorage.getItem(GIST_TOKEN_KEY);
   const ctrl=new AbortController();
   const tid=setTimeout(()=>ctrl.abort(),10000);
-  // Use GitHub API directly when credentials are available — bypasses CDN cache
-  if(gistId&&token){
-    const res=await fetch(`https://api.github.com/gists/${gistId}`,{
-      signal:ctrl.signal,
-      cache:'no-store',
-      headers:{'Authorization':'token '+token,'Accept':'application/vnd.github.v3+json'}
-    });
-    clearTimeout(tid);
-    if(!res.ok)throw new Error('HTTP '+res.status);
-    const gist=await res.json();
-    const file=gist.files&&gist.files['studyplanner_data.json'];
-    if(!file)throw new Error('File not found in Gist');
-    return JSON.parse(file.content);
-  }
-  // Fallback: plain fetch for non-Gist URLs
   const res=await fetch(url+(url.includes('?')?'&':'?')+'t='+Date.now(),{signal:ctrl.signal,cache:'no-store'});
   clearTimeout(tid);
   if(!res.ok)throw new Error('HTTP '+res.status);
@@ -774,16 +757,10 @@ async function fetchSyncData(url){
 }
 async function tryDriveSync(){
   const url=localStorage.getItem(DRIVE_URL_KEY);
-  const gistId=localStorage.getItem(GIST_ID_KEY);
-  const token=localStorage.getItem(GIST_TOKEN_KEY);
-  const canSync=(url&&url.startsWith('http'))||(gistId&&token);
-  if(!canSync){
-    if(gistId&&!token)showToast('Enter GitHub token in settings to enable sync','error');
-    return false;
-  }
+  if(!url||!url.startsWith('http'))return false;
   try{
     showToast('Syncing…');
-    const data=await fetchSyncData(url||'');
+    const data=await fetchSyncData(url);
     if(!isBackupFile(data))throw new Error('Not a backup file');
     const gistId=localStorage.getItem(GIST_ID_KEY);
     const gistToken=localStorage.getItem(GIST_TOKEN_KEY);
@@ -1385,7 +1362,9 @@ async function uploadToGist(content){
 async function syncToFolder(){
   const gistId=localStorage.getItem(GIST_ID_KEY);
   const token=localStorage.getItem(GIST_TOKEN_KEY);
-  if(!gistId||!token){showToast('Add Gist ID and token in settings');return;}
+  if(!gistId&&!token){showToast('Add Gist ID and token in settings','error');return;}
+  if(!gistId){showToast('Add Gist ID in settings','error');return;}
+  if(!token){showToast('Add GitHub token in settings','error');return;}
   showToast('Pushing to Gist…');
   try{
     const json=JSON.stringify(buildFullBackup(),null,2);
@@ -1448,7 +1427,7 @@ load();
 seedCredentials();
 (async function(){
   const loader=document.getElementById('syncLoader');
-  const hasSync=(localStorage.getItem(DRIVE_URL_KEY)||''). startsWith('http')||(localStorage.getItem(GIST_ID_KEY)&&localStorage.getItem(GIST_TOKEN_KEY));
+  const hasSync=(localStorage.getItem(DRIVE_URL_KEY)||'').startsWith('http');
   if(!hasSync&&loader)loader.classList.add('hidden');
   await tryDriveSync();
   if(loader)loader.classList.add('hidden');
