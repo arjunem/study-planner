@@ -349,6 +349,11 @@ h1 span{color:var(--accent2)}
 .set-btn[disabled]{opacity:.5;cursor:not-allowed}
 .toast{position:fixed;left:50%;bottom:22px;transform:translateX(-50%) translateY(10px);background:var(--surface);border:1px solid var(--border2);color:var(--text);padding:10px 14px;border-radius:999px;font-family:var(--mono);font-size:11px;box-shadow:0 12px 32px rgba(0,0,0,.35);opacity:0;pointer-events:none;transition:opacity .2s,transform .2s;z-index:300;max-width:min(92vw,520px);text-align:center}
 .toast.open{opacity:1;transform:translateX(-50%) translateY(0)}
+#syncLoader{position:fixed;inset:0;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;z-index:999;opacity:1;transition:opacity .3s}
+#syncLoader.hidden{opacity:0;pointer-events:none}
+#syncLoader .spin{width:32px;height:32px;border:2px solid var(--border2);border-top-color:var(--accent);border-radius:50%;animation:spin .7s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+#syncLoader span{font-family:var(--mono);font-size:11px;color:var(--muted)}
 #fileInput{display:none}
 </style>
 </head>
@@ -363,7 +368,7 @@ h1 span{color:var(--accent2)}
     <div class="hdr-btns">
       <button class="hdr-btn" id="themeBtn" onclick="toggleTheme()" title="Toggle light / dark">☀</button>
       <button class="hdr-btn" onclick="openImport()">+ Import</button>
-      <button class="hdr-btn primary" onclick="syncToFolder()">⟲ Sync</button>
+      <button class="hdr-btn primary" onclick="syncToFolder()">↑ Push</button>
       <button class="hdr-btn" onclick="exportSch()">↓ Export</button>
       <button class="hdr-btn" onclick="openSettings()" title="Settings">⚙</button>
     </div>
@@ -473,33 +478,10 @@ h1 span{color:var(--accent2)}
     <div class="modal-drag"></div>
     <div class="modal-head">
       <div class="m-date">Settings</div>
-      <div class="m-title">Sync folder</div>
-      <div class="m-meta">Choose a folder on supported browsers. Others use the default Downloads flow.</div>
+      <div class="m-title">Settings</div>
+      <div class="m-meta">Cloud sync and app preferences.</div>
     </div>
     <div class="modal-body">
-      <div class="set-row">
-        <div class="set-copy">
-          <div class="set-title">Default sync destination</div>
-          <div class="set-sub" id="settingsSupportNote"></div>
-          <div class="set-path" id="settingsFolderName">Browser default (Downloads)</div>
-        </div>
-      </div>
-      <div class="set-row">
-        <div class="set-copy">
-          <div class="set-title">Folder access</div>
-          <div class="set-sub">On Chrome and Edge, Sync can write directly into the selected folder after permission is granted.</div>
-        </div>
-        <div class="set-actions">
-          <button class="set-btn primary" id="settingsPickBtn" onclick="pickSyncDir()">Choose folder...</button>
-          <button class="set-btn" id="settingsResetBtn" onclick="clearSyncDir()">Reset</button>
-        </div>
-      </div>
-      <div class="set-row">
-        <div class="set-copy">
-          <div class="set-title">Sync file</div>
-          <div class="set-sub">Each sync writes a fresh dated file like <code>studyplanner_data_YYYY-MM-DD_HHmmss.json</code>, so you keep a history of backups.</div>
-        </div>
-      </div>
       <div class="set-row">
         <div class="set-copy">
           <div class="set-title">Light theme variant</div>
@@ -524,14 +506,34 @@ h1 span{color:var(--accent2)}
           <button type="button" class="set-btn danger" onclick="clearData()">Clear data</button>
         </div>
       </div>
+      <div class="set-row">
+        <div class="set-copy" style="width:100%">
+          <div class="set-title">Cloud sync URL</div>
+          <div class="set-sub">On load, the app fetches this URL and replaces local data. Use a GitHub Gist raw URL.<br>Format: <code>https://gist.githubusercontent.com/USER/ID/raw/studyplanner_data.json</code></div>
+          <div class="ctrl" style="margin-top:8px">
+            <input type="url" id="driveSyncUrl" placeholder="https://gist.githubusercontent.com/…" style="width:100%">
+          </div>
+          <div class="set-title" style="margin-top:14px">Gist upload</div>
+          <div class="set-sub">Gist ID and GitHub token (gist scope). Filled automatically when you push — Sync now also uploads to Gist.</div>
+          <div class="ctrl" style="margin-top:8px">
+            <label>Gist ID</label>
+            <input type="text" id="gistId" placeholder="c2d304061e49ce7e5a94457c5d11bd94" style="width:100%">
+          </div>
+          <div class="ctrl" style="margin-top:8px">
+            <label>GitHub token</label>
+            <input type="password" id="gistToken" placeholder="ghp_…" style="width:100%">
+          </div>
+        </div>
+      </div>
     </div>
     <div class="modal-foot">
       <button class="m-cancel" onclick="closeSettings()">Close</button>
-      <button class="m-save" onclick="syncToFolder()">Sync now</button>
+      <button class="m-save" onclick="syncToFolder()">Push to Gist</button>
     </div>
   </div>
 </div>
 
+<div id="syncLoader"><div class="spin"></div><span>Syncing from cloud…</span></div>
 <div class="toast" id="toast"></div>
 
 <script>
@@ -541,6 +543,9 @@ const LTHEME_KEY='studyplanner_ltheme';
 const SYNC_DB='studyplanner_sync';
 const SYNC_STORE='handles';
 const SYNC_KEY='dir';
+const DRIVE_URL_KEY='studyplanner_drive_url';
+const GIST_ID_KEY='studyplanner_gist_id';
+const GIST_TOKEN_KEY='studyplanner_gist_token';
 function applyTheme(mode,lt){
   const isLight=mode==='light';
   document.body.classList.toggle('light',isLight);
@@ -727,6 +732,53 @@ function importBackup(data){
   save();
 }
 
+async function fetchSyncData(url){
+  const gistId=localStorage.getItem(GIST_ID_KEY);
+  const token=localStorage.getItem(GIST_TOKEN_KEY);
+  const ctrl=new AbortController();
+  const tid=setTimeout(()=>ctrl.abort(),10000);
+  // Use GitHub API directly when credentials are available — bypasses CDN cache
+  if(gistId&&token){
+    const res=await fetch(`https://api.github.com/gists/${gistId}`,{
+      signal:ctrl.signal,
+      cache:'no-store',
+      headers:{'Authorization':'token '+token,'Accept':'application/vnd.github.v3+json'}
+    });
+    clearTimeout(tid);
+    if(!res.ok)throw new Error('HTTP '+res.status);
+    const gist=await res.json();
+    const file=gist.files&&gist.files['studyplanner_data.json'];
+    if(!file)throw new Error('File not found in Gist');
+    return JSON.parse(file.content);
+  }
+  // Fallback: plain fetch for non-Gist URLs
+  const res=await fetch(url+(url.includes('?')?'&':'?')+'t='+Date.now(),{signal:ctrl.signal,cache:'no-store'});
+  clearTimeout(tid);
+  if(!res.ok)throw new Error('HTTP '+res.status);
+  return res.json();
+}
+async function tryDriveSync(){
+  const url=localStorage.getItem(DRIVE_URL_KEY);
+  if(!url||!url.startsWith('http'))return false;
+  try{
+    showToast('Syncing…');
+    const data=await fetchSyncData(url);
+    if(!isBackupFile(data))throw new Error('Not a backup file');
+    const gistId=localStorage.getItem(GIST_ID_KEY);
+    const gistToken=localStorage.getItem(GIST_TOKEN_KEY);
+    localStorage.clear();
+    localStorage.setItem(DRIVE_URL_KEY,url);
+    if(gistId)localStorage.setItem(GIST_ID_KEY,gistId);
+    if(gistToken)localStorage.setItem(GIST_TOKEN_KEY,gistToken);
+    importBackup(data);
+    showToast('Synced');
+    return true;
+  }catch(e){
+    showToast('Cloud sync failed — using local data');
+    return false;
+  }
+}
+
 // ── SCHEDULE ───────────────────────────────────────────────────────
 function buildSchFromPlan(plan){
   if(!plan)return[];
@@ -842,6 +894,12 @@ function renderAll(){
   document.getElementById('startDate').value=st.startDate||td();
   document.getElementById('wdHrs').value=st.wdHrs||2;
   document.getElementById('weHrs').value=st.weHrs||4;
+  const _dsu=document.getElementById('driveSyncUrl');
+  if(_dsu)_dsu.value=localStorage.getItem(DRIVE_URL_KEY)||'';
+  const _gid=document.getElementById('gistId');
+  if(_gid)_gid.value=localStorage.getItem(GIST_ID_KEY)||'';
+  const _gtk=document.getElementById('gistToken');
+  if(_gtk)_gtk.value=localStorage.getItem(GIST_TOKEN_KEY)||'';
   renderModuleEditor(plan);
   const sch=buildSch();
   renderSummary(sch,plan);
@@ -1283,23 +1341,39 @@ function exportSch(){
   const blob=new Blob([JSON.stringify(out,null,2)],{type:'application/json'});
   downloadBlob(blob,`plan_snapshot_${plan.title.replace(/\s+/g,'_')}.json`);
 }
-async function syncToFolder(){
-  const out=buildFullBackup();
-  const blob=new Blob([JSON.stringify(out,null,2)],{type:'application/json'});
-  const filename=syncFileName();
-  const handle=await getSyncDirVerified();
-  if(handle){
-    try{
-      const fileHandle=await handle.getFileHandle(filename,{create:true});
-      const writable=await fileHandle.createWritable();
-      await writable.write(blob);
-      await writable.close();
-      showToast(`Synced to ${handle.name}`);
-      return;
-    }catch(e){}
+async function uploadToGist(content){
+  const gistId=localStorage.getItem(GIST_ID_KEY);
+  const token=localStorage.getItem(GIST_TOKEN_KEY);
+  if(!gistId||!token)throw new Error('Missing Gist credentials');
+  const res=await fetch(`https://api.github.com/gists/${gistId}`,{
+    method:'PATCH',
+    headers:{'Authorization':'token '+token,'Accept':'application/vnd.github.v3+json','Content-Type':'application/json'},
+    body:JSON.stringify({files:{'studyplanner_data.json':{content}}})
+  });
+  if(!res.ok)throw new Error('HTTP '+res.status);
+  const data=await res.json();
+  const rawUrl=data.files&&data.files['studyplanner_data.json']&&data.files['studyplanner_data.json'].raw_url;
+  if(rawUrl){
+    // strip the revision hash so the URL always points to the latest version
+    const stable=rawUrl.replace(/\/raw\/[a-f0-9]+\//,'/raw/');
+    localStorage.setItem(DRIVE_URL_KEY,stable);
+    const inp=document.getElementById('driveSyncUrl');
+    if(inp)inp.value=stable;
   }
-  downloadBlob(blob,filename);
-  showToast('Saved to Downloads');
+  return true;
+}
+async function syncToFolder(){
+  const gistId=localStorage.getItem(GIST_ID_KEY);
+  const token=localStorage.getItem(GIST_TOKEN_KEY);
+  if(!gistId||!token){showToast('Add Gist ID and token in settings');return;}
+  showToast('Pushing to Gist…');
+  try{
+    const json=JSON.stringify(buildFullBackup(),null,2);
+    await uploadToGist(json);
+    showToast('Pushed to Gist ✓');
+  }catch(e){
+    showToast('Gist push failed: '+e.message);
+  }
 }
 function clearData(){
   if(!confirm('This will permanently delete all plans, progress and notes stored in this browser.\n\nContinue?'))return;
@@ -1324,9 +1398,19 @@ function syncActiveTabUI(){
 document.getElementById('startDate').addEventListener('change',e=>{const pl=getPlan();if(!pl)return;pl.state.startDate=e.target.value;pl.state.dayStates={};save();renderAll()});
 document.getElementById('wdHrs').addEventListener('change',e=>{const pl=getPlan();if(!pl)return;pl.state.wdHrs=parseFloat(e.target.value)||2;save();renderAll()});
 document.getElementById('weHrs').addEventListener('change',e=>{const pl=getPlan();if(!pl)return;pl.state.weHrs=parseFloat(e.target.value)||4;save();renderAll()});
+document.getElementById('driveSyncUrl').addEventListener('change',function(){const v=this.value.trim();if(v)localStorage.setItem(DRIVE_URL_KEY,v);else localStorage.removeItem(DRIVE_URL_KEY);});
+document.getElementById('gistId').addEventListener('change',function(){const v=this.value.trim();if(v)localStorage.setItem(GIST_ID_KEY,v);else localStorage.removeItem(GIST_ID_KEY);});
+document.getElementById('gistToken').addEventListener('change',function(){const v=this.value.trim();if(v)localStorage.setItem(GIST_TOKEN_KEY,v);else localStorage.removeItem(GIST_TOKEN_KEY);});
 
 load();
-renderAll();
+(async function(){
+  const loader=document.getElementById('syncLoader');
+  const hasSyncUrl=localStorage.getItem(DRIVE_URL_KEY);
+  if(!hasSyncUrl&&loader)loader.classList.add('hidden');
+  await tryDriveSync();
+  if(loader)loader.classList.add('hidden');
+  renderAll();
+}());
 </script>
 </body>
 </html>
