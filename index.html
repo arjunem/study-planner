@@ -1115,7 +1115,7 @@ function renderList(sch){
 }
 
 // ── MODAL ──────────────────────────────────────────────────────────
-let curDs=null,curSt='planned',curDayData=null;
+let curDs=null,curSt='planned',curDayData=null,pendingModStates={};
 
 function renderModalModules(){
   const mDiv=document.getElementById('mMods');
@@ -1140,7 +1140,7 @@ function renderModalModules(){
     const remHours=Number.isFinite(mod.remainingHours)?mod.remainingHours:0;
     const overlapText=remHours>0?`${remHours}h remaining after this day`:'Completes on this day';
     const mk=modStateKey(curDs,mod.modIndex);
-    const modStatus=normModStatus((plan.state.moduleStates[mk]||{}).status);
+    const modStatus=mk in pendingModStates?pendingModStates[mk]:normModStatus((plan.state.moduleStates[mk]||{}).status);
     const lockEdit=modStatus==='completed';
     const completedFlag=lockEdit?'<span class="mod-flag mod-flag-completed" style="margin-left:6px">Completed</span>':'';
     const statusClass=modStatus==='completed'?'sel-completed':modStatus==='skipped'?'sel-skipped':'sel-progress';
@@ -1172,13 +1172,9 @@ function renderModalModules(){
 }
 
 function setModuleStatus(modIndex,status){
-  const plan=getPlan();if(!plan||!curDs)return;
-  if(!plan.state.moduleStates)plan.state.moduleStates={};
+  if(!curDs)return;
   const key=modStateKey(curDs,modIndex);
-  const next=normModStatus(status);
-  const prev=plan.state.moduleStates[key]||{};
-  plan.state.moduleStates[key]={...prev,status:next};
-  save();
+  pendingModStates[key]=normModStatus(status);
   renderModalModules();
 }
 
@@ -1187,7 +1183,7 @@ function addModuleTimeFromModal(modIndex,raw){
   const mod=plan.modules&&plan.modules[modIndex];
   if(!mod)return;
   const key=modStateKey(curDs,modIndex);
-  const modStatus=normModStatus(((plan.state.moduleStates||{})[key]||{}).status);
+  const modStatus=key in pendingModStates?pendingModStates[key]:normModStatus(((plan.state.moduleStates||{})[key]||{}).status);
   if(modStatus==='completed')return;
   const extra=parseFloat(raw);
   if(!Number.isFinite(extra)||extra<=0)return;
@@ -1203,6 +1199,7 @@ function openModal(ds,dayData){
   const plan=getPlan();if(!plan)return;
   curDs=ds;
   curDayData=dayData;
+  pendingModStates={};
   const dayState=(plan.state.dayStates||{})[ds]||{};
   curSt=normDayStatus(dayState.status);
   document.getElementById('mDate').textContent=fmtD(ds);
@@ -1229,9 +1226,13 @@ function saveDay(){
   const plan=getPlan();if(!plan||!curDs)return;
   if(!plan.state.dayStates)plan.state.dayStates={};
   plan.state.dayStates[curDs]={status:normDayStatus(curSt),notes:document.getElementById('mNotes').value};
-  save();closeModal();renderAll();
+  if(!plan.state.moduleStates)plan.state.moduleStates={};
+  Object.entries(pendingModStates).forEach(([k,st])=>{
+    plan.state.moduleStates[k]={...(plan.state.moduleStates[k]||{}),status:st};
+  });
+  save();closeModal();renderAll();autoSync();
 }
-function closeModal(){document.getElementById('dayOverlay').classList.remove('open');document.body.style.overflow='';curDs=null;curDayData=null}
+function closeModal(){document.getElementById('dayOverlay').classList.remove('open');document.body.style.overflow='';curDs=null;curDayData=null;pendingModStates={}}
 function closeModalOut(e){if(e.target===document.getElementById('dayOverlay'))closeModal()}
 
 // ── IMPORT ─────────────────────────────────────────────────────────
@@ -1391,6 +1392,19 @@ async function uploadToGist(content){
     if(inp)inp.value=stable;
   }
   return true;
+}
+async function autoSync(){
+  const gistId=localStorage.getItem(GIST_ID_KEY);
+  const token=localStorage.getItem(GIST_TOKEN_KEY);
+  if(!gistId||!token)return;
+  try{
+    const json=JSON.stringify(buildFullBackup(),null,2);
+    await uploadToGist(json);
+    localStorage.setItem(LAST_SYNC_KEY,Date.now());
+    updateLastSyncLabel();
+  }catch(e){
+    showToast('Auto-sync failed: '+e.message,'error');
+  }
 }
 async function syncToFolder(){
   const gistId=localStorage.getItem(GIST_ID_KEY);
