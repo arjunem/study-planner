@@ -198,6 +198,46 @@ h1 span{color:var(--accent2)}
 .pstat{font-family:var(--mono);font-size:10px;color:var(--muted)}
 .pstat span{color:var(--text);font-weight:500}
 
+/* TIMER */
+.timer-panel{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:14px 16px;margin-bottom:14px}
+.timer-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:10px}
+.timer-head-left{display:flex;align-items:center;gap:8px}
+.timer-icon{font-size:14px;line-height:1}
+.timer-title{font-family:var(--mono);font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em}
+.timer-toggle{font-family:var(--mono);font-size:14px;border:1px solid var(--border2);background:var(--surface2);color:var(--muted);width:30px;height:26px;border-radius:var(--rsm);cursor:pointer;display:inline-flex;align-items:center;justify-content:center}
+.timer-toggle:hover{border-color:var(--accent-b);color:var(--accent2)}
+.timer-panel.collapsed .timer-head{margin-bottom:0}
+.timer-panel.collapsed .timer-body{display:none}
+.pomo-modes{display:flex;gap:3px;margin-bottom:14px;background:var(--surface2);border-radius:var(--r);padding:3px}
+.pomo-mode{font-family:var(--mono);font-size:11px;padding:7px 0;border-radius:7px;border:1px solid transparent;background:transparent;color:var(--muted);cursor:pointer;transition:all .2s;letter-spacing:.03em;flex:1;text-align:center}
+.pomo-mode:hover{color:var(--text)}
+.pomo-mode.active[data-mode="focus"]{background:var(--accent-bg);color:var(--accent2);border-color:var(--accent-b)}
+.pomo-mode.active[data-mode="short"]{background:var(--teal-bg);color:var(--teal);border-color:var(--teal-b)}
+.pomo-mode.active[data-mode="long"]{background:var(--green-bg);color:var(--green);border-color:var(--green-b)}
+.pomo-dots{display:flex;justify-content:center;gap:10px;margin-bottom:4px}
+.pomo-dot{width:10px;height:10px;border-radius:50%;background:var(--surface2);border:1px solid var(--border2);transition:all .3s}
+.pomo-dot.done{background:var(--accent);border-color:var(--accent)}
+.pomo-dot.current{background:transparent;border-color:var(--accent-b);box-shadow:0 0 0 3px var(--accent-bg)}
+.timer-display{font-family:var(--mono);font-size:clamp(32px,8vw,52px);font-weight:500;color:var(--text);letter-spacing:.04em;text-align:center;padding:16px 0 14px;line-height:1;transition:color .3s}
+.timer-display.mode-focus.running{color:var(--accent2)}
+.timer-display.mode-short.running{color:var(--teal)}
+.timer-display.mode-long.running{color:var(--green)}
+.timer-display.alarming{animation:timerPulse 1s ease-in-out infinite}
+.timer-display.mode-focus.alarming{color:var(--amber)}
+.timer-display.mode-short.alarming{color:var(--teal)}
+.timer-display.mode-long.alarming{color:var(--green)}
+@keyframes timerPulse{0%,100%{opacity:1}50%{opacity:.4}}
+.timer-controls{display:flex;gap:8px;justify-content:center;margin-bottom:10px}
+.timer-btn{font-family:var(--mono);font-size:12px;padding:10px 22px;border-radius:var(--rsm);cursor:pointer;transition:all .2s;border:1px solid}
+.timer-btn-start{background:var(--accent-bg);border-color:var(--accent-b);color:var(--accent2)}
+.timer-btn-start:hover{background:var(--accent);color:#fff;border-color:var(--accent)}
+.timer-btn-start.paused{background:var(--amber-bg);border-color:var(--amber-b);color:var(--amber)}
+.timer-btn-reset{background:transparent;border-color:var(--border2);color:var(--muted)}
+.timer-btn-reset:hover{border-color:var(--red-b);color:var(--red)}
+.timer-alert{display:flex;align-items:center;justify-content:space-between;gap:10px;background:var(--amber-bg);border:1px solid var(--amber-b);border-radius:var(--rsm);padding:10px 14px;font-family:var(--mono);font-size:12px;color:var(--amber);margin-top:6px}
+.timer-alert-close{font-size:16px;line-height:1;background:none;border:none;color:var(--amber);cursor:pointer;padding:0 4px;opacity:.7}
+.timer-alert-close:hover{opacity:1}
+
 /* TABS */
 .tabs{display:flex;gap:3px;margin-bottom:12px;background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:4px}
 .tab{font-family:var(--mono);font-size:11px;padding:7px 0;border-radius:7px;border:none;background:transparent;color:var(--muted);cursor:pointer;transition:all .2s;letter-spacing:.04em;text-transform:uppercase;flex:1;text-align:center}
@@ -418,6 +458,37 @@ h1 span{color:var(--accent2)}
       <div class="prog-top"><span>Progress</span><span class="prog-pct" id="progPct">0%</span></div>
       <div class="prog-track"><div class="prog-fill" id="progFill" style="width:0%"></div></div>
       <div class="prog-stats" id="progStats"></div>
+    </div>
+    <div class="timer-panel" id="timerPanel">
+      <div class="timer-head">
+        <div class="timer-head-left">
+          <span class="timer-icon">⏱</span>
+          <span class="timer-title">Pomodoro Timer</span>
+        </div>
+        <button class="timer-toggle" id="timerToggle" onclick="toggleTimerPanel()" aria-label="Collapse timer" title="Collapse timer">▾</button>
+      </div>
+      <div class="timer-body" id="timerBody">
+        <div class="pomo-modes">
+          <button class="pomo-mode active" data-mode="focus" onclick="setPomoMode('focus')">Focus</button>
+          <button class="pomo-mode" data-mode="short" onclick="setPomoMode('short')">Short Break</button>
+          <button class="pomo-mode" data-mode="long" onclick="setPomoMode('long')">Long Break</button>
+        </div>
+        <div class="pomo-dots">
+          <span class="pomo-dot current" id="pomoDot0"></span>
+          <span class="pomo-dot" id="pomoDot1"></span>
+          <span class="pomo-dot" id="pomoDot2"></span>
+          <span class="pomo-dot" id="pomoDot3"></span>
+        </div>
+        <div class="timer-display mode-focus" id="timerDisplay" aria-live="polite">25:00</div>
+        <div class="timer-controls">
+          <button class="timer-btn timer-btn-start" id="timerStartBtn" onclick="timerStartPause()">Start</button>
+          <button class="timer-btn timer-btn-reset" onclick="timerReset()">Reset</button>
+        </div>
+        <div class="timer-alert" id="timerAlert" role="alert" style="display:none">
+          <span id="timerAlertMsg">Session complete! Time for a break.</span>
+          <button class="timer-alert-close" onclick="timerDismissAlert()" aria-label="Dismiss">×</button>
+        </div>
+      </div>
     </div>
     <div class="tabs">
       <button class="tab active" onclick="switchTab('calendar',this)">Calendar</button>
@@ -1248,6 +1319,179 @@ function closeSettings(){
 }
 function closeSettingsOut(e){if(e.target===document.getElementById('settingsOverlay'))closeSettings()}
 
+// ── POMODORO TIMER ─────────────────────────────────────────────────
+const POMO_DURATIONS={focus:25,short:5,long:15};
+let timerMode='focus';
+let pomodoroCount=0; // completed focus sessions in current cycle (0–4)
+let timerSecondsLeft=25*60,timerTotalSeconds=25*60,timerRunning=false,timerIntervalId=null;
+let timerAudioCtx=null,timerNotifPerm='default',timerPanelCollapsed=false;
+
+function timerFmt(s){return String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0')}
+
+function initTimerAudio(){
+  if(timerAudioCtx)return;
+  try{timerAudioCtx=new(window.AudioContext||window.webkitAudioContext)()}catch(e){}
+}
+
+function playTimerAlarm(){
+  if(!timerAudioCtx)return;
+  timerAudioCtx.resume().then(()=>{
+    [{freq:880,t:0},{freq:880,t:.25},{freq:1046,t:.5}].forEach(({freq,t})=>{
+      const osc=timerAudioCtx.createOscillator(),gain=timerAudioCtx.createGain();
+      osc.connect(gain);gain.connect(timerAudioCtx.destination);
+      osc.type='sine';osc.frequency.setValueAtTime(freq,timerAudioCtx.currentTime+t);
+      gain.gain.setValueAtTime(0,timerAudioCtx.currentTime+t);
+      gain.gain.linearRampToValueAtTime(.55,timerAudioCtx.currentTime+t+.01);
+      gain.gain.setValueAtTime(.55,timerAudioCtx.currentTime+t+.10);
+      gain.gain.linearRampToValueAtTime(0,timerAudioCtx.currentTime+t+.15);
+      osc.start(timerAudioCtx.currentTime+t);osc.stop(timerAudioCtx.currentTime+t+.20);
+      osc.onended=()=>{osc.disconnect();gain.disconnect()};
+    });
+  }).catch(()=>{});
+}
+
+async function requestNotifPermission(){
+  if(!('Notification'in window)){timerNotifPerm='denied';return}
+  if(Notification.permission!=='default'){timerNotifPerm=Notification.permission;return}
+  timerNotifPerm=await Notification.requestPermission();
+}
+
+function renderPomoDots(){
+  for(let i=0;i<4;i++){
+    const dot=document.getElementById('pomoDot'+i);
+    if(!dot)continue;
+    dot.className='pomo-dot';
+    if(i<Math.min(pomodoroCount,4))dot.classList.add('done');
+    else if(i===pomodoroCount&&timerMode==='focus'&&pomodoroCount<4)dot.classList.add('current');
+  }
+}
+
+function applyModeToDisplay(mode){
+  const d=document.getElementById('timerDisplay');
+  if(!d)return;
+  d.classList.remove('mode-focus','mode-short','mode-long');
+  d.classList.add('mode-'+mode);
+  const p=document.getElementById('timerPanel');
+  if(p)p.setAttribute('data-mode',mode);
+}
+
+function fireTimerAlarm(){
+  playTimerAlarm();
+  let alertMsg,nextMode,notifTitle,notifBody;
+  if(timerMode==='focus'){
+    pomodoroCount++;
+    const cycleComplete=(pomodoroCount>=4);
+    if(cycleComplete)pomodoroCount=4; // hold at 4 for dot display until long break taken
+    nextMode=cycleComplete?'long':'short';
+    alertMsg=cycleComplete?'4 pomodoros done! Take a long break (15 min).':'Session '+pomodoroCount+' done! Take a short break (5 min).';
+    notifTitle='Focus session complete!';
+    notifBody=alertMsg;
+  } else {
+    if(timerMode==='long')pomodoroCount=0; // reset cycle after long break
+    nextMode='focus';
+    alertMsg='Break over! Ready to focus?';
+    notifTitle='Break over!';
+    notifBody='Start your next focus session.';
+  }
+  if(timerNotifPerm==='granted'){
+    try{const n=new Notification(notifTitle,{body:notifBody,tag:'study-timer'});setTimeout(()=>n.close(),8000)}catch(e){}
+  }
+  const al=document.getElementById('timerAlert');
+  const msg=document.getElementById('timerAlertMsg');
+  if(msg)msg.textContent=alertMsg;
+  if(al)al.style.display='flex';
+  const dp=document.getElementById('timerDisplay');
+  if(dp)dp.classList.add('alarming');
+  showToast(alertMsg);
+  renderPomoDots();
+  // After alarm plays, switch to next mode (keep alert banner visible)
+  setTimeout(()=>{
+    timerMode=nextMode;
+    const dur=POMO_DURATIONS[nextMode]*60;
+    timerSecondsLeft=dur;timerTotalSeconds=dur;
+    document.querySelectorAll('.pomo-mode').forEach(b=>b.classList.toggle('active',b.dataset.mode===nextMode));
+    applyModeToDisplay(nextMode);
+    const d=document.getElementById('timerDisplay');
+    if(d)d.classList.remove('running','alarming');
+    const b=document.getElementById('timerStartBtn');
+    if(b){b.textContent='Start';b.classList.remove('paused')}
+    timerUpdateDisplay();
+    renderPomoDots();
+  },900);
+}
+
+function timerUpdateDisplay(){
+  const el=document.getElementById('timerDisplay');
+  if(!el)return;
+  el.textContent=timerFmt(timerSecondsLeft);
+  el.classList.toggle('running',timerRunning&&timerSecondsLeft>0);
+}
+
+function timerTick(){
+  if(timerSecondsLeft<=0)return;
+  timerSecondsLeft--;
+  timerUpdateDisplay();
+  if(timerSecondsLeft===0){
+    timerRunning=false;clearInterval(timerIntervalId);timerIntervalId=null;
+    const b=document.getElementById('timerStartBtn');if(b){b.textContent='Start';b.classList.remove('paused')}
+    fireTimerAlarm();
+  }
+}
+
+async function timerStartPause(){
+  initTimerAudio();
+  if(timerSecondsLeft===0)return;
+  if(!timerRunning){
+    if(timerNotifPerm==='default')await requestNotifPermission();
+    timerRunning=true;timerIntervalId=setInterval(timerTick,1000);
+    const b=document.getElementById('timerStartBtn');if(b){b.textContent='Pause';b.classList.remove('paused')}
+    const d=document.getElementById('timerDisplay');if(d)d.classList.add('running');
+  } else {
+    timerRunning=false;clearInterval(timerIntervalId);timerIntervalId=null;
+    const b=document.getElementById('timerStartBtn');if(b){b.textContent='Resume';b.classList.add('paused')}
+    const d=document.getElementById('timerDisplay');if(d)d.classList.remove('running');
+  }
+}
+
+function timerReset(){
+  timerRunning=false;clearInterval(timerIntervalId);timerIntervalId=null;
+  timerSecondsLeft=timerTotalSeconds;
+  const b=document.getElementById('timerStartBtn');if(b){b.textContent='Start';b.classList.remove('paused')}
+  const d=document.getElementById('timerDisplay');if(d)d.classList.remove('running','alarming');
+  const al=document.getElementById('timerAlert');if(al)al.style.display='none';
+  timerUpdateDisplay();
+}
+
+function setPomoMode(mode){
+  initTimerAudio();
+  timerReset();
+  timerMode=mode;
+  const dur=POMO_DURATIONS[mode]*60;
+  timerSecondsLeft=dur;timerTotalSeconds=dur;
+  document.querySelectorAll('.pomo-mode').forEach(b=>b.classList.toggle('active',b.dataset.mode===mode));
+  applyModeToDisplay(mode);
+  timerUpdateDisplay();
+  renderPomoDots();
+}
+
+function timerDismissAlert(){
+  const al=document.getElementById('timerAlert');if(al)al.style.display='none';
+  const d=document.getElementById('timerDisplay');if(d)d.classList.remove('alarming');
+}
+
+function toggleTimerPanel(){
+  timerPanelCollapsed=!timerPanelCollapsed;
+  const p=document.getElementById('timerPanel'),t=document.getElementById('timerToggle');
+  if(!p||!t)return;
+  p.classList.toggle('collapsed',timerPanelCollapsed);
+  t.textContent=timerPanelCollapsed?'▸':'▾';
+  t.setAttribute('aria-label',timerPanelCollapsed?'Expand timer':'Collapse timer');
+}
+
+function initTimer(){
+  setPomoMode('focus');
+}
+
 const dz=document.getElementById('dropZone');
 dz.addEventListener('dragover',e=>{e.preventDefault();dz.classList.add('drag-over')});
 dz.addEventListener('dragleave',()=>dz.classList.remove('drag-over'));
@@ -1481,6 +1725,7 @@ updateLastSyncLabel();
   await tryDriveSync();
   if(loader)loader.classList.add('hidden');
   renderAll();
+  initTimer();
 }());
 </script>
 </body>
